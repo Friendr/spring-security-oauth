@@ -5,11 +5,10 @@
   <name>OAuth for Spring Security</name>
   <description>Parent Project for OAuth Support for Spring Security</description>
   <packaging>pom</packaging>
-  <version>2.5.3.BUILD-SNAPSHOT</version>
+  <version>3.0.0.BUILD-SNAPSHOT</version>
   <url>https://docs.spring.io/spring-security/oauth</url>
 
   <modules>
-    <module>spring-security-oauth</module>
     <module>spring-security-oauth2</module>
     <module>tests</module>
     <module>samples</module>
@@ -18,14 +17,18 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <commons-codec.version>1.14</commons-codec.version>
-    <spring.version>4.3.30.RELEASE</spring.version>
-    <spring.security.version>4.2.20.RELEASE</spring.security.version>
-    <spring.data.redis.version>1.5.2.RELEASE</spring.data.redis.version>
-    <redis.clients.version>2.6.3</redis.clients.version>
+    <spring.version>6.0.7</spring.version>
+    <spring.security.version>6.0.2</spring.security.version>
+    <spring.data.redis.version>3.0.5</spring.data.redis.version>
+    <redis.clients.version>4.3.2</redis.clients.version>
     <junit.version>4.12</junit.version>
     <mockito.version>1.10.19</mockito.version>
-    <java.version>1.6</java.version>
+
+    <java.version>17</java.version>
+    <maven.compiler.source>${java.version}</maven.compiler.source>
+    <maven.compiler.target>${java.version}</maven.compiler.target>
   </properties>
 
   <scm>
@@ -167,13 +170,7 @@
       </build>
     </profile>
     <profile>
-      <id>spring5</id>
-        <properties>
-            <spring.version>5.0.16.RELEASE</spring.version>
-            <spring.security.version>5.0.3.RELEASE</spring.security.version>
-            <spring.data.redis.version>2.0.5.RELEASE</spring.data.redis.version>
-            <redis.clients.version>2.9.0</redis.clients.version>
-        </properties>
+      <id>spring6</id>
         <repositories>
             <repository>
                 <id>repo.spring.io-milestone</id>
@@ -228,38 +225,6 @@
         <activation>
           <activeByDefault>true</activeByDefault>
         </activation>
-        <build>
-            <plugins>
-                <plugin>
-                    <groupId>org.codehaus.mojo</groupId>
-                    <artifactId>animal-sniffer-maven-plugin</artifactId>
-                    <version>1.6</version>
-                    <configuration>
-                        <signature>
-                            <groupId>org.codehaus.mojo.signature</groupId>
-                            <artifactId>java16</artifactId>
-                            <version>1.0</version>
-                        </signature>
-                    </configuration>
-                    <executions>
-                        <execution>
-                            <id>enforce-java-6</id>
-                            <phase>test</phase>
-                            <goals>
-                                <goal>check</goal>
-                            </goals>
-                            <configuration>
-                                <ignores>
-                                    <!--allow dependencies on internal Sun APIs for now. Someday fix these.... -->
-                                    <ignore>sun.net.www.protocol.http.*</ignore>
-                                    <ignore>sun.net.www.protocol.https.*</ignore>
-                                </ignores>
-                            </configuration>
-                        </execution>
-                    </executions>
-                </plugin>
-            </plugins>
-        </build>
     </profile>
     <profile>
       <id>tests-exclude-redis</id>
@@ -399,11 +364,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
-        <version>2.3.2</version>
-        <configuration>
-          <source>${java.version}</source>
-          <target>${java.version}</target>
-        </configuration>
+        <version>3.10.1</version>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>

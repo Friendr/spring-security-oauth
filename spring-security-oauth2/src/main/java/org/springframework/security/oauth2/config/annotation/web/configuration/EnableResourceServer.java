@@ -22,7 +22,6 @@ import java.lang.annotation.Target;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 
 /**
  * Convenient annotation for OAuth2 Resource Servers, enabling a Spring Security filter that authenticates requests via
@@ -33,7 +32,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
  * somewhere else.
  * 
  * <p>
- * The annotation creates a {@link WebSecurityConfigurerAdapter} with a hard-coded {@link Order} (of 3). It's not
+ * The annotation creates a {@code WebSecurityConfigurerAdapter} with a hard-coded {@link Order} (of 3). It's not
  * possible to change the order right now owing to technical limitations in Spring, so you must avoid using order=3 in
  * other WebSecurityConfigurerAdapters in your application (Spring Security will let you know if you forget).
  *

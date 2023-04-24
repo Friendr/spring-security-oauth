@@ -25,7 +25,6 @@ import org.springframework.security.oauth2.common.util.OAuth2Utils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.mvc.condition.NameValueExpression;
 import org.springframework.web.servlet.mvc.condition.ParamsRequestCondition;
-import org.springframework.web.servlet.mvc.condition.PatternsRequestCondition;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 import org.springframework.web.servlet.view.UrlBasedViewResolver;
@@ -137,28 +136,27 @@ public class FrameworkEndpointHandlerMapping extends RequestMappingHandlerMappin
 
 	@Override
 	protected RequestMappingInfo getMappingForMethod(Method method, Class<?> handlerType) {
-
 		RequestMappingInfo defaultMapping = super.getMappingForMethod(method, handlerType);
 		if (defaultMapping == null) {
 			return null;
 		}
 
-		Set<String> defaultPatterns = defaultMapping.getPatternsCondition().getPatterns();
-		String[] patterns = new String[defaultPatterns.size()];
+		RequestMappingInfo.Builder mappingBuilder = defaultMapping.mutate();
 
+		Set<String> defaultPatterns = defaultMapping.getPatternValues();
+		String[] patterns = new String[defaultPatterns.size()];
 		int i = 0;
 		for (String pattern : defaultPatterns) {
 			patterns[i] = getPath(pattern);
 			paths.add(pattern);
 			i++;
 		}
-		PatternsRequestCondition patternsInfo = new PatternsRequestCondition(patterns, getUrlPathHelper(),
-				getPathMatcher(), useSuffixPatternMatch(), useTrailingSlashMatch(), getFileExtensions());
+		mappingBuilder.paths(patterns);
 
-		ParamsRequestCondition paramsInfo = defaultMapping.getParamsCondition();
+		ParamsRequestCondition defaultParamsCondition = defaultMapping.getParamsCondition();
 		if (!approvalParameter.equals(OAuth2Utils.USER_OAUTH_APPROVAL) && defaultPatterns.contains("/oauth/authorize")) {
-			String[] params = new String[paramsInfo.getExpressions().size()];
-			Set<NameValueExpression<String>> expressions = paramsInfo.getExpressions();
+			String[] params = new String[defaultParamsCondition.getExpressions().size()];
+			Set<NameValueExpression<String>> expressions = defaultParamsCondition.getExpressions();
 			i = 0;
 			for (NameValueExpression<String> expression : expressions) {
 				String param = expression.toString();
@@ -170,14 +168,10 @@ public class FrameworkEndpointHandlerMapping extends RequestMappingHandlerMappin
 				}
 				i++;
 			}
-			paramsInfo = new ParamsRequestCondition(params);
+			mappingBuilder.params(params);
 		}
 
-		RequestMappingInfo mapping = new RequestMappingInfo(patternsInfo, defaultMapping.getMethodsCondition(),
-				paramsInfo, defaultMapping.getHeadersCondition(), defaultMapping.getConsumesCondition(),
-				defaultMapping.getProducesCondition(), defaultMapping.getCustomCondition());
-		return mapping;
-
+		return mappingBuilder.build();
 	}
 
 }

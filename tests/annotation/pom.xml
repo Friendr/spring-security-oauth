@@ -4,7 +4,7 @@
 
 	<groupId>org.demo</groupId>
 	<artifactId>spring-oauth2-tests-parent</artifactId>
-	<version>2.5.3.BUILD-SNAPSHOT</version>
+	<version>3.0.0.BUILD-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <modules>
@@ -26,8 +26,8 @@
 
 	<properties>
 		<start-class>demo.Application</start-class>
-		<java.version>1.7</java.version>
-		<spring.version>4.3.30.RELEASE</spring.version>
+		<java.version>17</java.version>
+		<spring.version>6.0.7</spring.version>
 	</properties>
 
 	<name>spring-oauth2-tests</name>
@@ -36,7 +36,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>1.5.22.RELEASE</version>
+		<version>3.0.5</version>
 		<relativePath/>
 	</parent>
 
@@ -45,7 +45,7 @@
 		<dependency>
 			<groupId>org.springframework.security.oauth</groupId>
 			<artifactId>spring-security-oauth2</artifactId>
-			<version>2.5.3.BUILD-SNAPSHOT</version>
+			<version>3.0.0.BUILD-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.security</groupId>
@@ -132,7 +132,7 @@
 
 	<profiles>
 		<profile>
-			<id>spring5</id>
+			<id>spring6</id>
 			<build>
 				<plugins>
 					<plugin>

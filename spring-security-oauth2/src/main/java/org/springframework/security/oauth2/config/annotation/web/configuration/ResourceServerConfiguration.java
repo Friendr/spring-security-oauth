@@ -20,22 +20,24 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import org.springframework.aop.framework.Advised;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.AnonymousAuthenticationProvider;
 import org.springframework.security.authentication.AuthenticationEventPublisher;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.oauth2.config.annotation.web.configurers.ResourceServerSecurityConfigurer;
 import org.springframework.security.oauth2.provider.endpoint.FrameworkEndpointHandlerMapping;
 import org.springframework.security.oauth2.provider.token.ResourceServerTokenServices;
 import org.springframework.security.oauth2.provider.token.TokenStore;
+import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.util.ReflectionUtils;
 
@@ -48,7 +50,7 @@ import org.springframework.util.ReflectionUtils;
  */
 @Configuration
 @Deprecated
-public class ResourceServerConfiguration extends WebSecurityConfigurerAdapter implements Ordered {
+public class ResourceServerConfiguration implements Ordered {
 
 	private int order = 3;
 
@@ -117,8 +119,9 @@ public class ResourceServerConfiguration extends WebSecurityConfigurerAdapter im
 
 	}
 
-	@Override
-	protected void configure(HttpSecurity http) throws Exception {
+	@Order(3)
+	@Bean
+	public SecurityFilterChain resourceServerSecurityFilterChain(HttpSecurity http) throws Exception {
 		ResourceServerSecurityConfigurer resources = new ResourceServerSecurityConfigurer();
 		ResourceServerTokenServices services = resolveTokenServices();
 		if (services != null) {
@@ -151,7 +154,7 @@ public class ResourceServerConfiguration extends WebSecurityConfigurerAdapter im
 		http.apply(resources);
 		if (endpoints != null) {
 			// Assume we are in an Authorization Server
-			http.requestMatcher(new NotOAuthRequestMatcher(endpoints.oauth2EndpointHandlerMapping()));
+			http.securityMatcher(new NotOAuthRequestMatcher(endpoints.oauth2EndpointHandlerMapping()));
 		}
 		for (ResourceServerConfigurer configurer : configurers) {
 			// Delegates can add authorizeRequests() here
@@ -163,6 +166,8 @@ public class ResourceServerConfiguration extends WebSecurityConfigurerAdapter im
 			// avoid that we only add it if the user hasn't configured anything.
 			http.authorizeRequests().anyRequest().authenticated();
 		}
+
+		return http.build();
 	}
 
 	private ResourceServerTokenServices resolveTokenServices() {

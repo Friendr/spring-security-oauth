@@ -12,10 +12,7 @@ import java.util.regex.Pattern;
 
 import org.junit.Rule;
 import org.junit.Test;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.security.oauth2.client.OAuth2RestTemplate;
 import org.springframework.security.oauth2.client.resource.UserRedirectRequiredException;
 import org.springframework.security.oauth2.client.token.DefaultAccessTokenRequest;
@@ -110,7 +107,7 @@ public class AuthorizationCodeGrantTests {
 
 		assertTrue("Redirect location should be to the original photo URL: "
 				+ location, location.contains("photos/1"));
-		HttpStatus status = serverRunning.getStatusCode(location, headers);
+		HttpStatusCode status = serverRunning.getStatusCode(location, headers);
 		assertEquals(HttpStatus.OK, status);
 	}
 
@@ -145,7 +142,7 @@ public class AuthorizationCodeGrantTests {
 
 		assertTrue("Redirect location should be to the original photo URL: "
 				+ location, location.contains("sparklr/redirect"));
-		HttpStatus status = serverRunning.getStatusCode(location, headers);
+		HttpStatusCode status = serverRunning.getStatusCode(location, headers);
 		assertEquals(HttpStatus.OK, status);
 	}
 

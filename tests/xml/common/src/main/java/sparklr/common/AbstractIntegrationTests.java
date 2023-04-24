@@ -23,7 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
-import org.springframework.boot.test.IntegrationTest;
+import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletPath;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.oauth2.client.resource.BaseOAuth2ProtectedResourceDetails;
 import org.springframework.security.oauth2.client.test.BeforeOAuth2Context;
@@ -37,12 +37,13 @@ import org.springframework.security.oauth2.provider.approval.JdbcApprovalStore;
 import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.security.oauth2.provider.token.store.InMemoryTokenStore;
 import org.springframework.security.oauth2.provider.token.store.JdbcTokenStore;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @WebAppConfiguration
-@IntegrationTest("server.port=0")
+@TestPropertySource(properties = "server.port=0")
 public abstract class AbstractIntegrationTests {
 
 	@Value("${local.server.port}")
@@ -59,7 +60,7 @@ public abstract class AbstractIntegrationTests {
 	public OAuth2ContextSetup context = OAuth2ContextSetup.standard(http);
 
 	@Autowired
-	private ServerProperties server;
+	private DispatcherServletPath dispatcherServletPath;
 	
 	@Autowired
 	protected SecurityProperties security;
@@ -82,7 +83,7 @@ public abstract class AbstractIntegrationTests {
 
 	@BeforeOAuth2Context
 	public void fixPaths() {
-		String prefix = server.getServletPrefix();
+		String prefix = dispatcherServletPath.getPrefix();
 		http.setPort(port);
 		http.setPrefix(prefix);
 		BaseOAuth2ProtectedResourceDetails resource = (BaseOAuth2ProtectedResourceDetails) context.getResource();

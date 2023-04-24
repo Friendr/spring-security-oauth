@@ -13,6 +13,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.security.oauth2.client.test.OAuth2ContextConfiguration;
 import org.springframework.security.oauth2.client.test.OAuth2ContextSetup;
@@ -36,7 +37,7 @@ public class ClientCredentialsProviderTests {
 	
 	private HttpHeaders responseHeaders;
 
-	private HttpStatus responseStatus;
+	private HttpStatusCode responseStatus;
 
 	/**
 	 * tests the basic provider

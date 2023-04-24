@@ -9,13 +9,8 @@ import java.util.Map;
 import org.junit.rules.MethodRule;
 import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.Statement;
-import org.springframework.boot.test.TestRestTemplate;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.http.*;
 import org.springframework.security.oauth2.client.test.RestTemplateHolder;
 import org.springframework.util.MultiValueMap;
 import org.springframework.util.StringUtils;
@@ -203,12 +198,12 @@ public class HttpTestUtils implements MethodRule, RestTemplateHolder {
 		return getForResponse(path, headers, Collections.<String, String> emptyMap());
 	}
 
-	public HttpStatus getStatusCode(String path, final HttpHeaders headers) {
+	public HttpStatusCode getStatusCode(String path, final HttpHeaders headers) {
 		ResponseEntity<Void> response = getForResponse(path, headers);
 		return response.getStatusCode();
 	}
 
-	public HttpStatus getStatusCode(String path) {
+	public HttpStatusCode getStatusCode(String path) {
 		return getStatusCode(getUrl(path), null);
 	}
 
@@ -221,8 +216,8 @@ public class HttpTestUtils implements MethodRule, RestTemplateHolder {
 	}
 
 	public RestOperations createRestTemplate() {
-		RestTemplate client = new TestRestTemplate();
-		return client;
+		TestRestTemplate client = new TestRestTemplate();
+		return client.getRestTemplate();
 	}
 
 	public UriBuilder buildUri(String url) {

@@ -7,6 +7,7 @@ import java.util.UUID;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import org.springframework.security.oauth2.common.DefaultExpiringOAuth2RefreshToken;
 import org.springframework.security.oauth2.common.DefaultOAuth2AccessToken;
@@ -17,8 +18,6 @@ import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.RequestTokenFactory;
 import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.security.oauth2.provider.token.store.TokenStoreBaseTests;
-
-import redis.clients.jedis.JedisShardInfo;
 
 /**
  * @author efenderbosch
@@ -34,7 +33,7 @@ public class RedisTokenStorePrefixTests extends TokenStoreBaseTests {
 
 	@Before
 	public void setup() throws Exception {
-		JedisShardInfo shardInfo = new JedisShardInfo("localhost");
+		RedisStandaloneConfiguration shardInfo = new RedisStandaloneConfiguration("localhost");
 		JedisConnectionFactory connectionFactory = new JedisConnectionFactory(shardInfo);
 		tokenStore = new RedisTokenStore(connectionFactory);
 		tokenStore.setPrefix("spring:oauth2:");

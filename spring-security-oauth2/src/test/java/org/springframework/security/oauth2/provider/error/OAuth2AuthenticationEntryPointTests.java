@@ -15,7 +15,7 @@ package org.springframework.security.oauth2.provider.error;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletResponse;
 
 import org.junit.Test;
 import org.springframework.http.MediaType;

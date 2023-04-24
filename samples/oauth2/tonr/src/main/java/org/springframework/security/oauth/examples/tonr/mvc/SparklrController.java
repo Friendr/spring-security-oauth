@@ -9,8 +9,8 @@ import javax.imageio.ImageIO;
 import javax.imageio.ImageReadParam;
 import javax.imageio.ImageReader;
 import javax.imageio.stream.MemoryCacheImageInputStream;
-import javax.servlet.UnavailableException;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.UnavailableException;
+import jakarta.servlet.http.HttpServletRequest;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;

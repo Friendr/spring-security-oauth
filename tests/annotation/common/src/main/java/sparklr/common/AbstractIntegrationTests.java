@@ -31,9 +31,10 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
-import org.springframework.boot.context.embedded.LocalServerPort;
+import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletPath;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.converter.HttpMessageConverter;
@@ -106,7 +107,7 @@ public abstract class AbstractIntegrationTests {
 	private SecurityProperties security;
 
 	@Autowired
-	private ServerProperties server;
+	private DispatcherServletPath dispatcherServletPath;
 
 	@Autowired(required = false)
 	@Qualifier("consumerTokenServices")
@@ -138,7 +139,7 @@ public abstract class AbstractIntegrationTests {
 
 	@Before
 	public void init() {
-		String prefix = server.getServletPrefix();
+		String prefix = dispatcherServletPath.getPrefix();
 		http.setPort(port);
 		http.setPrefix(prefix);
 		if (new ClassPathResource("sample.jks").exists()) {

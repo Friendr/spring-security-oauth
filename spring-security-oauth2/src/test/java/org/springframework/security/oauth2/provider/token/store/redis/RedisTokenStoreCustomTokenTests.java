@@ -26,6 +26,7 @@ import org.company.oauth2.CustomOAuth2Authentication;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.core.serializer.support.SerializationFailedException;
+import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import org.springframework.security.authentication.TestingAuthenticationToken;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
@@ -36,7 +37,6 @@ import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.OAuth2Request;
 import org.springframework.security.oauth2.provider.RequestTokenFactory;
 import org.springframework.util.ClassUtils;
-import redis.clients.jedis.JedisShardInfo;
 
 import static org.junit.Assert.*;
 
@@ -68,7 +68,7 @@ public class RedisTokenStoreCustomTokenTests {
         if (springDataRedis_2_0) {
             connectionFactory = new JedisConnectionFactory();
         } else {
-            JedisShardInfo shardInfo = new JedisShardInfo("localhost");
+            RedisStandaloneConfiguration shardInfo = new RedisStandaloneConfiguration("localhost");
             connectionFactory = new JedisConnectionFactory(shardInfo);
         }
 

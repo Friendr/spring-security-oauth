@@ -17,7 +17,7 @@ package org.springframework.security.oauth2.provider.token.store.jwk;
 
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
-import org.apache.http.HttpHeaders;
+import org.apache.hc.core5.http.HttpHeaders;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;

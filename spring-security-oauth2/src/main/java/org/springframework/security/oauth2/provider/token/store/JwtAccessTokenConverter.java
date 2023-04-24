@@ -167,7 +167,7 @@ public class JwtAccessTokenConverter implements TokenEnhancer, AccessTokenConver
 
 	/**
 	 * Sets the JWT signing key. It can be either a simple MAC key or an RSA key. RSA keys
-	 * should be in OpenSSH format, as produced by <tt>ssh-keygen</tt>.
+	 * should be in OpenSSH format, as produced by <code>ssh-keygen</code>.
 	 *
 	 * @param key the key to be used for signing JWTs.
 	 */

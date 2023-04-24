@@ -23,10 +23,11 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.ProviderManager;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -44,6 +45,7 @@ import org.springframework.security.oauth2.provider.ClientDetailsService;
 import org.springframework.security.oauth2.provider.ClientRegistrationException;
 import org.springframework.security.oauth2.provider.client.BaseClientDetails;
 import org.springframework.security.web.FilterChainProxy;
+import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
@@ -159,27 +161,23 @@ public class Gh808EnableAuthorizationServerTests {
 
 	@Configuration
 	@EnableWebSecurity
-	static class WebSecurityConfig extends WebSecurityConfigurerAdapter {
-
-		@Override
-		protected void configure(HttpSecurity http) throws Exception {
-			http
-					.authorizeRequests()
-					.anyRequest().authenticated();
-		}
-
-		@Override
-		protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-			auth
-					.userDetailsService(userDetailsService());
-		}
+	static class WebSecurityConfig {
 
 		@Bean
-		@Override
-		public AuthenticationManager authenticationManagerBean() throws Exception {
-			// Expose the Global AuthenticationManager
-			return super.authenticationManagerBean();
+		public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+			return http
+					.authorizeHttpRequests(authz -> authz
+							.anyRequest().authenticated()
+					)
+					.build();
 		}
+
+//		@Bean
+//		public AuthenticationManager authenticationManagerBean(UserDetailsService userDetailsService) throws Exception {
+//			DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
+//			authenticationProvider.setUserDetailsService(userDetailsService);
+//			return new ProviderManager(authenticationProvider);
+//		}
 
 		@Bean
 		public UserDetailsService userDetailsService() {

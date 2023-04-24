@@ -1,12 +1,12 @@
 package demo;
 
-import javax.servlet.Filter;
+import jakarta.servlet.Filter;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.context.embedded.FilterRegistrationBean;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -15,7 +15,6 @@ import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.oauth2.provider.ClientDetailsService;
@@ -28,6 +27,7 @@ import org.springframework.security.oauth2.provider.expression.OAuth2WebSecurity
 import org.springframework.security.oauth2.provider.token.DefaultTokenServices;
 import org.springframework.security.oauth2.provider.token.store.InMemoryTokenStore;
 import org.springframework.security.web.AuthenticationEntryPoint;
+import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.preauth.AbstractPreAuthenticatedProcessingFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
@@ -79,71 +79,73 @@ public class Application {
 	}
 
 	@Configuration
-	protected static class ResourceServer extends WebSecurityConfigurerAdapter {
+	protected static class ResourceServer {
 		
 		@Autowired
 		@Qualifier("resourceFilter")
 		private Filter resourceFilter;
 
 		@Bean
-		public FilterRegistrationBean resourceFilterRegistration() {
-			FilterRegistrationBean bean = new FilterRegistrationBean();
+		public FilterRegistrationBean<Filter> resourceFilterRegistration() {
+			FilterRegistrationBean<Filter> bean = new FilterRegistrationBean<>();
 			bean.setFilter(resourceFilter);
 			bean.setEnabled(false);
 			return bean;
 		}
 
-		@Override
-		protected void configure(HttpSecurity http) throws Exception {
-			// @formatter:off	
-			http.addFilterBefore(resourceFilter, AbstractPreAuthenticatedProcessingFilter.class)
-				.requestMatcher(new NegatedRequestMatcher(new AntPathRequestMatcher("/oauth/**")))
-				.authorizeRequests().anyRequest().authenticated().expressionHandler(new OAuth2WebSecurityExpressionHandler())
-			.and()
-				.anonymous().disable()
-				.csrf().disable()
-				.exceptionHandling()
-					.authenticationEntryPoint(new OAuth2AuthenticationEntryPoint())
-					.accessDeniedHandler(new OAuth2AccessDeniedHandler());
-			// @formatter:on
+		@Bean
+		public SecurityFilterChain resourceSecurityFilterChain(HttpSecurity http) throws Exception {
+			return http
+					.addFilterBefore(resourceFilter, AbstractPreAuthenticatedProcessingFilter.class)
+					.securityMatcher(new NegatedRequestMatcher(new AntPathRequestMatcher("/oauth/**")))
+					.authorizeRequests(authz -> authz
+							.anyRequest().authenticated().expressionHandler(new OAuth2WebSecurityExpressionHandler())
+					)
+					.anonymous().disable()
+					.csrf().disable()
+					.exceptionHandling(exceptionHandling -> exceptionHandling
+							.authenticationEntryPoint(new OAuth2AuthenticationEntryPoint())
+							.accessDeniedHandler(new OAuth2AccessDeniedHandler())
+					)
+					.build();
 		}
-
 
 	}
 
 	@Configuration
-	@Order(Ordered.HIGHEST_PRECEDENCE)
-	protected static class TokenEndpointSecurity extends WebSecurityConfigurerAdapter {
+	protected static class TokenEndpointSecurity {
 
 		@Autowired
 		private ClientDetailsService clientDetailsService;
-
-		@Override
-		protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-			auth.userDetailsService(clientDetailsUserService());
-		}
 
 		@Bean
 		protected UserDetailsService clientDetailsUserService() {
 			return new ClientDetailsUserDetailsService(clientDetailsService);
 		}
 
-		@Override
-		protected void configure(HttpSecurity http) throws Exception {
-			// @formatter:off
-			http.anonymous().disable()
-				.antMatcher("/oauth/token")
-				.authorizeRequests().anyRequest().authenticated()
-			.and()
-				.httpBasic().authenticationEntryPoint(authenticationEntryPoint())
-			.and()
-				.csrf().requireCsrfProtectionMatcher(new AntPathRequestMatcher("/oauth/token")).disable()
-				.exceptionHandling()
-					.accessDeniedHandler(accessDeniedHandler())
-					.authenticationEntryPoint(authenticationEntryPoint())
-			.and()
-				.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-			// @formatter:on
+		@Order(Ordered.HIGHEST_PRECEDENCE)
+		@Bean
+		public SecurityFilterChain tokenSecurityFilterChain(HttpSecurity http) throws Exception {
+			return http
+					.anonymous().disable()
+					.securityMatcher("/oauth/token")
+					.authorizeRequests(authz -> authz
+							.anyRequest().authenticated()
+					)
+					.httpBasic(httpBasic -> httpBasic
+							.authenticationEntryPoint(authenticationEntryPoint())
+					)
+					.csrf(csrf -> csrf
+							.requireCsrfProtectionMatcher(new AntPathRequestMatcher("/oauth/token")).disable()
+					)
+					.exceptionHandling(exceptionHandling -> exceptionHandling
+							.accessDeniedHandler(accessDeniedHandler())
+							.authenticationEntryPoint(authenticationEntryPoint())
+					)
+					.sessionManagement(sessionManagement -> sessionManagement
+							.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+					)
+					.build();
 		}
 
 		@Bean

@@ -17,8 +17,8 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.Collections;
 
-import javax.servlet.Filter;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.Filter;
+import jakarta.servlet.http.HttpServletRequest;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -34,7 +34,6 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.codec.Base64;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
@@ -255,7 +254,7 @@ public class ResourceServerConfigurationTests {
 		}
 
 		@Configuration
-		protected static class SecurityConfiguration extends WebSecurityConfigurerAdapter {
+		protected static class SecurityConfiguration {
 			@Bean
 			public PasswordEncoder passwordEncoder() {
 				return NoOpPasswordEncoder.getInstance();
@@ -281,7 +280,7 @@ public class ResourceServerConfigurationTests {
 			endpoints.pathMapping("/oauth/authorize", "/authorize");
 		}
 		@Configuration
-		protected static class SecurityConfiguration extends WebSecurityConfigurerAdapter {
+		protected static class SecurityConfiguration {
 			@Bean
 			public PasswordEncoder passwordEncoder() {
 				return NoOpPasswordEncoder.getInstance();

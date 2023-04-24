@@ -22,14 +22,14 @@ import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.util.List;
 
 @SpringBootApplication
 @EnableResourceServer
 @RestController
-public class Application extends WebMvcConfigurerAdapter {
+public class Application implements WebMvcConfigurer {
 	
 	public static void main(String[] args) {
 		SpringApplication.run(Application.class, args);

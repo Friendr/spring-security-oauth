@@ -77,9 +77,10 @@ import org.springframework.security.web.FilterChainProxy;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
-import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
-import javax.servlet.Filter;
+import jakarta.servlet.Filter;
+import org.springframework.web.servlet.HandlerInterceptor;
+
 import javax.sql.DataSource;
 import java.util.Arrays;
 import java.util.List;
@@ -353,7 +354,7 @@ public class AuthorizationServerConfigurationTests {
 		@Override
 		public void configure(AuthorizationServerEndpointsConfigurer endpoints) throws Exception {
 			endpoints.tokenStore(tokenStore).approvalStore(approvalStore()).userApprovalHandler(userApprovalHandler())
-					.addInterceptor(new HandlerInterceptorAdapter() {
+					.addInterceptor(new HandlerInterceptor() {
 					});
 		}
 

@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
+import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletPath;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -41,8 +42,7 @@ public class Application {
 			// @formatter:off
 			http
 				// Just for laughs, apply OAuth protection to only 3 resources
-				.requestMatchers().antMatchers("/","/admin/beans","/admin/health")
-			.and()
+				.securityMatcher("/","/admin/beans","/admin/health")
 				.authorizeRequests()
 					.anyRequest().access("#oauth2.hasScope('read')");
 			// @formatter:on
@@ -78,7 +78,7 @@ public class Application {
 		private AuthenticationManager authenticationManager;
 
 		@Autowired
-		private ServerProperties server;
+		private DispatcherServletPath dispatcherServletPath;
 
 		@Override
 		public void configure(AuthorizationServerSecurityConfigurer oauthServer) throws Exception {
@@ -87,7 +87,7 @@ public class Application {
 
 		@Override
 		public void configure(AuthorizationServerEndpointsConfigurer endpoints) throws Exception {
-			String prefix = server.getServletPrefix();
+			String prefix = dispatcherServletPath.getPrefix();
 			endpoints.prefix(prefix);
 			// @formatter:off	
 			endpoints.authenticationManager(authenticationManager)

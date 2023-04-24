@@ -18,12 +18,7 @@ import org.junit.internal.AssumptionViolatedException;
 import org.junit.rules.MethodRule;
 import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.Statement;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
@@ -272,7 +267,7 @@ public class ServerRunning implements MethodRule {
 		}
 	}
 
-	public HttpStatus getStatusCode(String path, final HttpHeaders headers) {
+	public HttpStatusCode getStatusCode(String path, final HttpHeaders headers) {
 		RequestCallback requestCallback = new NullRequestCallback();
 		if (headers != null) {
 			requestCallback = new RequestCallback() {
@@ -290,7 +285,7 @@ public class ServerRunning implements MethodRule {
 				}).getStatusCode();
 	}
 
-	public HttpStatus getStatusCode(String path) {
+	public HttpStatusCode getStatusCode(String path) {
 		return getStatusCode(getUrl(path), null);
 	}
 
@@ -360,9 +355,6 @@ public class ServerRunning implements MethodRule {
 					}
 				}
 				return new URI(builder.toString());
-			} catch (UnsupportedEncodingException ex) {
-				// should not happen, UTF-8 is always supported
-				throw new IllegalStateException(ex);
 			} catch (URISyntaxException ex) {
 				throw new IllegalArgumentException("Could not create URI from [" + builder + "]: " + ex, ex);
 			}

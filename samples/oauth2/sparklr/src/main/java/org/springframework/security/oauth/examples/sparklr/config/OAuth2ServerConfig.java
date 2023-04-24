@@ -43,6 +43,9 @@ import org.springframework.security.oauth2.provider.approval.UserApprovalHandler
 import org.springframework.security.oauth2.provider.request.DefaultOAuth2RequestFactory;
 import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.security.oauth2.provider.token.store.InMemoryTokenStore;
+import org.springframework.security.web.util.matcher.RegexRequestMatcher;
+
+import static org.springframework.security.web.util.matcher.RegexRequestMatcher.regexMatcher;
 
 /**
  * @author Rob Winch
@@ -70,19 +73,18 @@ public class OAuth2ServerConfig {
 				// session creation to be allowed (it's disabled by default in 2.0.6)
 				.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
 			.and()
-				.requestMatchers().antMatchers("/photos/**", "/oauth/users/**", "/oauth/clients/**","/me")
-			.and()
+				.securityMatcher("/photos/**", "/oauth/users/**", "/oauth/clients/**","/me")
 				.authorizeRequests()
-					.antMatchers("/me").access("#oauth2.hasScope('read')")					
-					.antMatchers("/photos").access("#oauth2.hasScope('read') or (!#oauth2.isOAuth() and hasRole('ROLE_USER'))")                                        
-					.antMatchers("/photos/trusted/**").access("#oauth2.hasScope('trust')")
-					.antMatchers("/photos/user/**").access("#oauth2.hasScope('trust')")					
-					.antMatchers("/photos/**").access("#oauth2.hasScope('read') or (!#oauth2.isOAuth() and hasRole('ROLE_USER'))")
-					.regexMatchers(HttpMethod.DELETE, "/oauth/users/([^/].*?)/tokens/.*")
+					.requestMatchers("/me").access("#oauth2.hasScope('read')")
+					.requestMatchers("/photos").access("#oauth2.hasScope('read') or (!#oauth2.isOAuth() and hasRole('ROLE_USER'))")
+					.requestMatchers("/photos/trusted/**").access("#oauth2.hasScope('trust')")
+					.requestMatchers("/photos/user/**").access("#oauth2.hasScope('trust')")
+					.requestMatchers("/photos/**").access("#oauth2.hasScope('read') or (!#oauth2.isOAuth() and hasRole('ROLE_USER'))")
+					.requestMatchers(regexMatcher(HttpMethod.DELETE, "/oauth/users/([^/].*?)/tokens/.*"))
 						.access("#oauth2.clientHasRole('ROLE_CLIENT') and (hasRole('ROLE_USER') or #oauth2.isClient()) and #oauth2.hasScope('write')")
-					.regexMatchers(HttpMethod.GET, "/oauth/clients/([^/].*?)/users/.*")
+					.requestMatchers(regexMatcher(HttpMethod.GET, "/oauth/clients/([^/].*?)/users/.*"))
 						.access("#oauth2.clientHasRole('ROLE_CLIENT') and (hasRole('ROLE_USER') or #oauth2.isClient()) and #oauth2.hasScope('read')")
-					.regexMatchers(HttpMethod.GET, "/oauth/clients/.*")
+					.requestMatchers(regexMatcher(HttpMethod.GET, "/oauth/clients/.*"))
 						.access("#oauth2.clientHasRole('ROLE_CLIENT') and #oauth2.isClient() and #oauth2.hasScope('read')");
 			// @formatter:on
 		}

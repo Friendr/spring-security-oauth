@@ -8,12 +8,13 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
+import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 @Configuration
 @EnableWebSecurity
-public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
+public class SecurityConfiguration {
 
     @Autowired
     public void globalUserDetails(AuthenticationManagerBuilder auth) throws Exception {
@@ -21,40 +22,35 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .password("emu").roles("USER");
     }
 
-    @Override
-    public void configure(WebSecurity web) throws Exception {
-        web.ignoring().antMatchers("/webjars/**", "/images/**", "/oauth/uncache_approvals", "/oauth/cache_approvals");
-    }
-
-    @Override
     @Bean
-    public AuthenticationManager authenticationManagerBean() throws Exception {
-        return super.authenticationManagerBean();
+    public WebSecurityCustomizer webSecurityCustomizer() {
+        return web -> web.ignoring().requestMatchers("/webjars/**", "/images/**", "/oauth/uncache_approvals", "/oauth/cache_approvals");
     }
 
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
-        // @formatter:off
-                 http
-            .authorizeRequests()
-                .antMatchers("/login.jsp").permitAll()
-                .anyRequest().hasRole("USER")
-                .and()
-            .exceptionHandling()
-                .accessDeniedPage("/login.jsp?authorization_error=true")
-                .and()
-            // TODO: put CSRF protection back into this endpoint
-            .csrf()
-                .requireCsrfProtectionMatcher(new AntPathRequestMatcher("/oauth/authorize"))
-                .disable()
-            .logout()
-            	.logoutUrl("/logout")
-                .logoutSuccessUrl("/login.jsp")
-                .and()
-            .formLogin()
-            	.loginProcessingUrl("/login")
-                .failureUrl("/login.jsp?authentication_error=true")
-                .loginPage("/login.jsp");
-        // @formatter:on
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        return http
+                .authorizeRequests(authz -> authz
+                        .requestMatchers("/login.jsp").permitAll()
+                        .anyRequest().hasRole("USER")
+                )
+                .exceptionHandling(exceptionHandling -> exceptionHandling
+                        .accessDeniedPage("/login.jsp?authorization_error=true")
+                )
+                // TODO: put CSRF protection back into this endpoint
+                .csrf(csrf -> csrf
+                        .requireCsrfProtectionMatcher(new AntPathRequestMatcher("/oauth/authorize"))
+                        .disable()
+                )
+                .logout(logout -> logout
+                        .logoutUrl("/logout")
+                        .logoutSuccessUrl("/login.jsp")
+                )
+                .formLogin(formLogin -> formLogin
+                        .loginProcessingUrl("/login")
+                        .failureUrl("/login.jsp?authentication_error=true")
+                        .loginPage("/login.jsp")
+                )
+                .build();
     }
 }

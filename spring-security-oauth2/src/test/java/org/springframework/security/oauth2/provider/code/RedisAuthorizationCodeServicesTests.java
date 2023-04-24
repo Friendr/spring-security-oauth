@@ -26,6 +26,7 @@ import static org.junit.Assert.fail;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import org.springframework.security.authentication.TestingAuthenticationToken;
 import org.springframework.security.oauth2.common.exceptions.InvalidGrantException;
@@ -33,7 +34,6 @@ import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.RequestTokenFactory;
 
 import org.springframework.util.ClassUtils;
-import redis.clients.jedis.JedisShardInfo;
 
 /**
  * @author Stefan Rempfer
@@ -57,7 +57,7 @@ public class RedisAuthorizationCodeServicesTests {
 		if (springDataRedis_2_0) {
 			connectionFactory = new JedisConnectionFactory();
 		} else {
-			JedisShardInfo shardInfo = new JedisShardInfo("localhost");
+			RedisStandaloneConfiguration shardInfo = new RedisStandaloneConfiguration("localhost");
 			connectionFactory = new JedisConnectionFactory(shardInfo);
 		}
 

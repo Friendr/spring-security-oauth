@@ -85,7 +85,7 @@ public class CombinedApplication {
 
 		@Override
 		public void configure(HttpSecurity http) throws Exception {
-			http.antMatcher("/admin/beans").authorizeRequests().anyRequest().authenticated();
+			http.securityMatcher("/admin/beans").authorizeRequests().anyRequest().authenticated();
 		}
 
 	}
