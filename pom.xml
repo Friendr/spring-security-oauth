@@ -1,9 +1,9 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.friendr</groupId>
-  <artifactId>spring-security-oauth-parent</artifactId>
-  <name>OAuth for Spring Security</name>
-  <description>Parent Project for OAuth Support for Spring Security</description>
+  <artifactId>spring-security-oauth2-parent</artifactId>
+  <name>OAuth2 for Spring Security (parent)</name>
+  <description>Parent Project for OAuth2 Support for Spring Security</description>
   <packaging>pom</packaging>
   <version>3.0.0-SNAPSHOT</version>
   <url>https://docs.spring.io/spring-security/oauth</url>
