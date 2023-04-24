@@ -29,12 +29,8 @@ import org.springframework.util.ReflectionUtils;
 /**
  * Implementation of authorization code services that stores the codes and authentication in Redis.
  *
- * <p>
- * @deprecated See the <a href="https://github.com/spring-projects/spring-security/wiki/OAuth-2.0-Migration-Guide">OAuth 2.0 Migration Guide</a> for Spring Security 5.
- *
  * @author Stefan Rempfer
  */
-@Deprecated
 public class RedisAuthorizationCodeServices extends RandomValueAuthorizationCodeServices {
 
 	private static final boolean springDataRedis_2_0 = ClassUtils.isPresent(

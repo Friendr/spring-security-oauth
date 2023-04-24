@@ -36,9 +36,6 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
  * possible to change the order right now owing to technical limitations in Spring, so you must avoid using order=3 in
  * other WebSecurityConfigurerAdapters in your application (Spring Security will let you know if you forget).
  *
- * <p>
- * @deprecated See the <a href="https://github.com/spring-projects/spring-security/wiki/OAuth-2.0-Migration-Guide">OAuth 2.0 Migration Guide</a> for Spring Security 5.
- *
  * @author Dave Syer
  * 
  */
@@ -46,7 +43,6 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Import(ResourceServerConfiguration.class)
-@Deprecated
 public @interface EnableResourceServer {
 
 }

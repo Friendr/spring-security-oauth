@@ -31,15 +31,11 @@ import org.springframework.security.oauth2.client.token.grant.password.ResourceO
  * or class). Used at the class level it will apply to all test methods (and {@link BeforeOAuth2Context} initializers).
  * Used at the method level it will apply only to the method, overriding any value found on the enclosing class.
  *
- * <p>
- * @deprecated See the <a href="https://github.com/spring-projects/spring-security/wiki/OAuth-2.0-Migration-Guide">OAuth 2.0 Migration Guide</a> for Spring Security 5.
- *
  * @author Dave Syer
  * 
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.TYPE, ElementType.METHOD })
-@Deprecated
 public @interface OAuth2ContextConfiguration {
 
 	/**

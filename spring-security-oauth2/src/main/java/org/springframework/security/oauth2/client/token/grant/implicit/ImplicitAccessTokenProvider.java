@@ -35,12 +35,8 @@ import org.springframework.web.client.ResponseExtractor;
  * authenticated and if the user has approved the grant of the access token. Only if those two conditions are met should
  * an access token be available through this provider.
  *
- * <p>
- * @deprecated See the <a href="https://github.com/spring-projects/spring-security/wiki/OAuth-2.0-Migration-Guide">OAuth 2.0 Migration Guide</a> for Spring Security 5.
- *
  * @author Dave Syer
  */
-@Deprecated
 public class ImplicitAccessTokenProvider extends OAuth2AccessTokenSupport implements AccessTokenProvider {
 
 	public boolean supportsResource(OAuth2ProtectedResourceDetails resource) {

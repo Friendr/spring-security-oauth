@@ -22,14 +22,10 @@ import java.lang.annotation.Target;
  * consequently before the regular JUnit <code>&#64;Before</code> methods, which are executed only <em>after</em> the
  * OAuth2Context is setup.
  *
- * <p>
- * @deprecated See the <a href="https://github.com/spring-projects/spring-security/wiki/OAuth-2.0-Migration-Guide">OAuth 2.0 Migration Guide</a> for Spring Security 5.
- *
  * @author Dave Syer
  * 
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
-@Deprecated
 public @interface BeforeOAuth2Context {
 }

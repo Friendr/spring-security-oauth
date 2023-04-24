@@ -16,15 +16,11 @@ import org.springframework.security.oauth2.provider.endpoint.TokenEndpoint;
  * {@link AuthorizationRequest} is converted into a {@link TokenRequest} for processing through the token granting
  * chain.
  *
- * <p>
- * @deprecated See the <a href="https://github.com/spring-projects/spring-security/wiki/OAuth-2.0-Migration-Guide">OAuth 2.0 Migration Guide</a> for Spring Security 5.
- *
  * @author Amanda Anganes
  * @author Dave Syer
  * 
  */
 @SuppressWarnings("serial")
-@Deprecated
 public class TokenRequest extends BaseRequest {
 
 	private String grantType;
