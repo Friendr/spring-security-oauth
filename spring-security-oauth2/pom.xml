@@ -17,6 +17,9 @@
 		<jakarta-servlet.version>6.0.0</jakarta-servlet.version>
 		<spring.security.jwt.version>1.1.1.RELEASE</spring.security.jwt.version>
 		<powermock.version>1.7.4</powermock.version>
+
+		<maven.install.skip>false</maven.install.skip>
+		<maven.deploy.skip>false</maven.deploy.skip>
 	</properties>
 
 	<build>
