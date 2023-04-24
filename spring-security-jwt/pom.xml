@@ -3,7 +3,7 @@
 
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>org.springframework.security</groupId>
+	<groupId>com.friendr</groupId>
 	<artifactId>spring-security-jwt</artifactId>
 	<version>1.1.2.BUILD-SNAPSHOT</version>
 	<packaging>jar</packaging>

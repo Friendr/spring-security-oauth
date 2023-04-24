@@ -43,7 +43,7 @@
     <dependencyManagement>
 	<dependencies>
 		<dependency>
-			<groupId>org.springframework.security.oauth</groupId>
+			<groupId>com.friendr</groupId>
 			<artifactId>spring-security-oauth2</artifactId>
 			<version>3.0.0.BUILD-SNAPSHOT</version>
 		</dependency>
