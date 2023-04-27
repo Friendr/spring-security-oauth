@@ -1,0 +1,22 @@
+steps:
+- id: checkout ci-settings.xml
+  name: gcr.io/cloud-builders/gsutil
+  args: ['cp', 'gs://friendr-246611_cloudbuild/ci-settings.xml', 'ci-settings.xml']
+
+- id: maven deploy
+  name: eclipse-temurin:17-jdk
+  entrypoint: bash
+  args: ['-c', './mvnw -s ci-settings.xml deploy -Dmaven.test.skip=true -pl spring-security-oauth2 -am']
+  env:
+  - MAVEN_OPTS=-Dmaven.wagon.httpconnectionManager.ttlSeconds=25 -Dmaven.wagon.http.retryHandler.count=3
+  - CI_MAVEN_USERNAME=$_CI_MAVEN_USERNAME
+  secretEnv:
+  - CI_MAVEN_PASSWORD
+
+substitutions:
+  _CI_MAVEN_USERNAME: friendrapp
+
+availableSecrets:
+  secretManager:
+  - versionName: projects/friendr-246611/secrets/CI_MAVEN_PASSWORD/versions/latest
+    env: CI_MAVEN_PASSWORD
