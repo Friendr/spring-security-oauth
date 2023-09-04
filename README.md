@@ -49,6 +49,27 @@ and deploy into **remote** Maven repository:
 
     $ ./mvnw deploy -DskipTests -pl spring-security-oauth2 -am
 
+## Release `spring-security-oauth2` module and its dependencies
+
+To release `spring-security-oauth2` module and its dependencies:
+
+    $ ./mvnw release:prepare -DautoVersionSubmodules=true -Darguments="-Dmaven.test.skip=true"
+    $ ./mvnw release:clean
+
+The first command will update `version` of all Maven modules (new version
+value will be asked), commit the updated files into Git repository, add
+Git tag (will be asked) and PUSH to the remote repository. After this it will
+update `version` of all Maven moduels to a new development (SNAPSHOT) version
+(will be asked) and commit the files, then push the commit to the remote
+repository.
+
+The second command will delete temporary files, required for the first command
+to work properly.
+
+There is no need to execute `./mvnw release:perform` command as GCB will do its job
+(will check out from PUSHed commit and perform the deployment to Maven repo).
+See `cloudbuild.yaml` for details.
+
 ## Samples
 
 Samples and integration tests are in [a subdirectory](samples).  There
