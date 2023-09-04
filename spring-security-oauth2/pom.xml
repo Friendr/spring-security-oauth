@@ -15,7 +15,6 @@
 	<properties>
 		<jackson2.version>2.14.2</jackson2.version>
 		<jakarta-servlet.version>6.0.0</jakarta-servlet.version>
-		<spring.security.jwt.version>1.1.1.RELEASE</spring.security.jwt.version>
 		<powermock.version>1.7.4</powermock.version>
 
 		<maven.install.skip>false</maven.install.skip>
@@ -136,7 +135,7 @@
 		</dependency>
 
 		<dependency>
-			<groupId>org.springframework.security</groupId>
+			<groupId>com.friendr</groupId>
 			<artifactId>spring-security-jwt</artifactId>
 			<optional>true</optional>
 		</dependency>

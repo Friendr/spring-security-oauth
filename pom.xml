@@ -335,9 +335,9 @@
         </dependency>
 
 		<dependency>
-			<groupId>org.springframework.security</groupId>
+			<groupId>com.friendr</groupId>
 			<artifactId>spring-security-jwt</artifactId>
-			<version>${spring.security.jwt.version}</version>
+			<version>${project.version}</version>
 			<optional>true</optional>
 		</dependency>
 
