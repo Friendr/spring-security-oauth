@@ -35,9 +35,9 @@
   </properties>
 
   <scm>
-    <url>https://github.com/SpringSource/spring-security-oauth</url>
-    <connection>scm:git:git://github.com/SpringSource/spring-security-oauth.git</connection>
-    <developerConnection>scm:git:ssh://git@github.com/SpringSource/spring-security-oauth.git</developerConnection>
+    <url>https://github.com/Friendr/spring-security-oauth</url>
+    <connection>scm:git:git://github.com/Friendr/spring-security-oauth.git</connection>
+    <developerConnection>scm:git:ssh://git@github.com/Friendr/spring-security-oauth.git</developerConnection>
     <tag>HEAD</tag>
   </scm>
   <issueManagement>
