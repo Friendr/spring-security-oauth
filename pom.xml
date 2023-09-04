@@ -18,12 +18,12 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-    <commons-codec.version>1.14</commons-codec.version>
-    <spring.version>6.0.7</spring.version>
-    <spring.security.version>6.0.2</spring.security.version>
-    <spring.data.redis.version>3.0.5</spring.data.redis.version>
-    <redis.clients.version>4.3.2</redis.clients.version>
-    <junit.version>4.12</junit.version>
+    <commons-codec.version>1.16.0</commons-codec.version>
+    <spring.version>6.0.11</spring.version>
+    <spring.security.version>6.1.3</spring.security.version>
+    <spring.data.redis.version>3.1.3</spring.data.redis.version>
+    <redis.clients.version>4.4.4</redis.clients.version>
+    <junit.version>4.13.2</junit.version>
     <mockito.version>1.10.19</mockito.version>
 
     <java.version>17</java.version>
