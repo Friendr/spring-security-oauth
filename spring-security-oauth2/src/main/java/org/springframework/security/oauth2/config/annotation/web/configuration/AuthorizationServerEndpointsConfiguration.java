@@ -13,12 +13,12 @@
 
 package org.springframework.security.oauth2.config.annotation.web.configuration;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
-
+import com.nimbusds.jose.JWSAlgorithm;
+import com.nimbusds.jose.jwk.JWK;
+import com.nimbusds.jose.jwk.JWKSet;
+import com.nimbusds.jose.jwk.KeyUse;
+import com.nimbusds.jose.jwk.RSAKey;
 import jakarta.annotation.PostConstruct;
-
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.BeanFactoryUtils;
@@ -45,16 +45,22 @@ import org.springframework.security.oauth2.provider.code.AuthorizationCodeServic
 import org.springframework.security.oauth2.provider.endpoint.AuthorizationEndpoint;
 import org.springframework.security.oauth2.provider.endpoint.CheckTokenEndpoint;
 import org.springframework.security.oauth2.provider.endpoint.FrameworkEndpointHandlerMapping;
+import org.springframework.security.oauth2.provider.endpoint.JwksEndpoint;
 import org.springframework.security.oauth2.provider.endpoint.RedirectResolver;
 import org.springframework.security.oauth2.provider.endpoint.TokenEndpoint;
 import org.springframework.security.oauth2.provider.endpoint.TokenKeyEndpoint;
 import org.springframework.security.oauth2.provider.endpoint.WhitelabelApprovalEndpoint;
 import org.springframework.security.oauth2.provider.endpoint.WhitelabelErrorEndpoint;
 import org.springframework.security.oauth2.provider.error.WebResponseExceptionTranslator;
+import org.springframework.security.oauth2.provider.token.AccessTokenConverter;
 import org.springframework.security.oauth2.provider.token.AuthorizationServerTokenServices;
 import org.springframework.security.oauth2.provider.token.ConsumerTokenServices;
 import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
 import org.springframework.stereotype.Component;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
 
 /**
  * @author Dave Syer
@@ -119,6 +125,37 @@ public class AuthorizationServerEndpointsConfiguration {
 		endpoint.setAccessTokenConverter(getEndpointsConfigurer().getAccessTokenConverter());
 		endpoint.setExceptionTranslator(exceptionTranslator());
 		return endpoint;
+	}
+
+	@Bean
+	public JwksEndpoint jwksEndpoint() throws Exception {
+		AccessTokenConverter accessTokenConverter = getEndpointsConfigurer().getAccessTokenConverter();
+		if (accessTokenConverter instanceof JwtAccessTokenConverter jwtAccessTokenConverter) {
+			if (jwtAccessTokenConverter.isPublic()) {
+				String verifierKey = jwtAccessTokenConverter.getKey().get("value");
+				JWK jwk = JWK.parseFromPEMEncodedObjects(verifierKey);
+				if (!jwk.isPrivate()) {
+					// Add some OPTIONAL JWK properties (See https://www.ietf.org/rfc/rfc7517.txt)
+					if (jwk instanceof RSAKey rsaKey) {
+						jwk = new RSAKey.Builder(rsaKey)
+								.keyIDFromThumbprint()
+								.keyUse(KeyUse.SIGNATURE)
+								.algorithm(detectJWSAlgorithm(jwtAccessTokenConverter.getKey().get("alg")))
+								.build();
+					}
+					JWKSet jwkSet = new JWKSet(jwk);
+					return new JwksEndpoint(jwkSet);
+				}
+			}
+		}
+		return null; // Do not register JWKS endpoint
+	}
+
+	private JWSAlgorithm detectJWSAlgorithm(String jcaAlgorithm) {
+		return switch (jcaAlgorithm) {
+			case "SHA256withRSA" -> JWSAlgorithm.RS256;
+			default -> null;
+		};
 	}
 
 	@Bean

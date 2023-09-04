@@ -37,6 +37,18 @@ m2eclipse plugin) can import the projects as existing Maven projects.
 Spring Security OAuth is released under the terms of the Apache
 Software License Version 2.0 (see license.txt).
 
+## Build `spring-security-oauth2` module and its dependencies
+
+To build `spring-security-oauth2` module and its dependencies
+and install into **local** Maven repository:
+
+    $ ./mvnw install -DskipTests -pl spring-security-oauth2 -am
+
+To build `spring-security-oauth2` module and its dependencies
+and deploy into **remote** Maven repository:
+
+    $ ./mvnw deploy -DskipTests -pl spring-security-oauth2 -am
+
 ## Samples
 
 Samples and integration tests are in [a subdirectory](samples).  There

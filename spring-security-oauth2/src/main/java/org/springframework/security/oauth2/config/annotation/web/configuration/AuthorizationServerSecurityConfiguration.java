@@ -70,19 +70,21 @@ public class AuthorizationServerSecurityConfiguration {
 		String tokenEndpointPath = handlerMapping.getServletPath("/oauth/token");
 		String tokenKeyPath = handlerMapping.getServletPath("/oauth/token_key");
 		String checkTokenPath = handlerMapping.getServletPath("/oauth/check_token");
+		String jwksPath = handlerMapping.getServletPath("/.well-known/jwks.json");
 		if (!endpoints.getEndpointsConfigurer().isUserDetailsServiceOverride()) {
 			UserDetailsService userDetailsService = http.getSharedObject(UserDetailsService.class);
 			endpoints.getEndpointsConfigurer().userDetailsService(userDetailsService);
 		}
 
 		http
-				.securityMatcher(tokenEndpointPath, tokenKeyPath, checkTokenPath)
+				.securityMatcher(tokenEndpointPath, tokenKeyPath, checkTokenPath, jwksPath)
 				.authorizeHttpRequests(authz -> authz
 						.requestMatchers(tokenEndpointPath).fullyAuthenticated()
 						.requestMatchers(tokenKeyPath).access(
 								new WebExpressionAuthorizationManager(configurer.getTokenKeyAccess()))
 						.requestMatchers(checkTokenPath).access(
 								new WebExpressionAuthorizationManager(configurer.getCheckTokenAccess()))
+						.requestMatchers(jwksPath).permitAll()
 						.anyRequest().denyAll()
 				)
 				.sessionManagement(sessionManagement -> sessionManagement
