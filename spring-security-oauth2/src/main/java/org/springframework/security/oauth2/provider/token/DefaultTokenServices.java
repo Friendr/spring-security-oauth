@@ -311,6 +311,7 @@ public class DefaultTokenServices implements AuthorizationServerTokenServices, R
 		if (validitySeconds > 0) {
 			token.setExpiration(new Date(System.currentTimeMillis() + (validitySeconds * 1000L)));
 		}
+		token.setIssuedAt(new Date());
 		token.setRefreshToken(refreshToken);
 		token.setScope(authentication.getOAuth2Request().getScope());
 

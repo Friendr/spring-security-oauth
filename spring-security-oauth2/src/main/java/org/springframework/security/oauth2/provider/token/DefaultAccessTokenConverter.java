@@ -12,6 +12,15 @@
  */
 package org.springframework.security.oauth2.provider.token;
 
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.AuthorityUtils;
+import org.springframework.security.oauth2.common.DefaultOAuth2AccessToken;
+import org.springframework.security.oauth2.common.OAuth2AccessToken;
+import org.springframework.security.oauth2.provider.OAuth2Authentication;
+import org.springframework.security.oauth2.provider.OAuth2Request;
+
+import java.time.Instant;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -20,14 +29,6 @@ import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
-
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.AuthorityUtils;
-import org.springframework.security.oauth2.common.DefaultOAuth2AccessToken;
-import org.springframework.security.oauth2.common.OAuth2AccessToken;
-import org.springframework.security.oauth2.provider.OAuth2Authentication;
-import org.springframework.security.oauth2.provider.OAuth2Request;
 
 /**
  * Default implementation of {@link AccessTokenConverter}.
@@ -85,6 +86,7 @@ public class DefaultAccessTokenConverter implements AccessTokenConverter {
 
 	public Map<String, ?> convertAccessToken(OAuth2AccessToken token, OAuth2Authentication authentication) {
 		Map<String, Object> response = new HashMap<String, Object>();
+		Map<String, Object> additionalInformation = new HashMap<>(token.getAdditionalInformation());
 		OAuth2Request clientToken = authentication.getOAuth2Request();
 
 		if (!authentication.isClientOnly()) {
@@ -96,11 +98,16 @@ public class DefaultAccessTokenConverter implements AccessTokenConverter {
 			}
 		}
 
-		if (token.getScope()!=null) {
+		if (token.getScope() != null) {
 			response.put(scopeAttribute, token.getScope());
 		}
-		if (token.getAdditionalInformation().containsKey(JTI)) {
-			response.put(JTI, token.getAdditionalInformation().get(JTI));
+
+		if (additionalInformation.containsKey(JTI)) {
+			response.put(JTI, additionalInformation.remove(JTI));
+		}
+
+		if (token.getIssuedAt() != null) {
+			response.put(IAT, token.getIssuedAt().getTime() / 1000);
 		}
 
 		if (token.getExpiration() != null) {
@@ -111,7 +118,7 @@ public class DefaultAccessTokenConverter implements AccessTokenConverter {
 			response.put(GRANT_TYPE, authentication.getOAuth2Request().getGrantType());
 		}
 
-		response.putAll(token.getAdditionalInformation());
+		response.putAll(additionalInformation);
 
 		response.put(clientIdAttribute, clientToken.getClientId());
 		if (clientToken.getResourceIds() != null && !clientToken.getResourceIds().isEmpty()) {
@@ -123,12 +130,16 @@ public class DefaultAccessTokenConverter implements AccessTokenConverter {
 	public OAuth2AccessToken extractAccessToken(String value, Map<String, ?> map) {
 		DefaultOAuth2AccessToken token = new DefaultOAuth2AccessToken(value);
 		Map<String, Object> info = new HashMap<String, Object>(map);
+		info.remove(IAT);
 		info.remove(EXP);
 		info.remove(AUD);
 		info.remove(clientIdAttribute);
 		info.remove(scopeAttribute);
+		if (map.containsKey(IAT)) {
+			token.setIssuedAt(getDate(map.get(IAT)));
+		}
 		if (map.containsKey(EXP)) {
-			token.setExpiration(new Date((Long) map.get(EXP) * 1000L));
+			token.setExpiration(getDate(map.get(EXP)));
 		}
 		if (map.containsKey(JTI)) {
 			info.put(JTI, map.get(JTI));
@@ -159,6 +170,18 @@ public class DefaultAccessTokenConverter implements AccessTokenConverter {
 		OAuth2Request request = new OAuth2Request(parameters, clientId, authorities, true, scope, resourceIds, null, null,
 				null);
 		return new OAuth2Authentication(request, user);
+	}
+
+	private Date getDate(Object dateOrInstantOrUnixSeconds) {
+		Date date;
+		if (dateOrInstantOrUnixSeconds instanceof Date dateExp) {
+			date = dateExp;
+		} else if (dateOrInstantOrUnixSeconds instanceof Instant instantExp) {
+			date = Date.from(instantExp);
+		} else { // Fallback to number or throw a ClassCastException
+			date = new Date(((Number) dateOrInstantOrUnixSeconds).longValue() * 1000L);
+		}
+		return date;
 	}
 
 	private Collection<String> getAudience(Map<String, ?> map) {

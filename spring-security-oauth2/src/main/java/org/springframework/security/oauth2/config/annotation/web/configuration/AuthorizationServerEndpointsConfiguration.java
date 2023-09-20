@@ -52,6 +52,7 @@ import org.springframework.security.oauth2.provider.endpoint.TokenKeyEndpoint;
 import org.springframework.security.oauth2.provider.endpoint.WhitelabelApprovalEndpoint;
 import org.springframework.security.oauth2.provider.endpoint.WhitelabelErrorEndpoint;
 import org.springframework.security.oauth2.provider.error.WebResponseExceptionTranslator;
+import org.springframework.security.oauth2.provider.jwks.JwkSetJwtAccessTokenConverter;
 import org.springframework.security.oauth2.provider.token.AccessTokenConverter;
 import org.springframework.security.oauth2.provider.token.AuthorizationServerTokenServices;
 import org.springframework.security.oauth2.provider.token.ConsumerTokenServices;
@@ -130,7 +131,9 @@ public class AuthorizationServerEndpointsConfiguration {
 	@Bean
 	public JwksEndpoint jwksEndpoint() throws Exception {
 		AccessTokenConverter accessTokenConverter = getEndpointsConfigurer().getAccessTokenConverter();
-		if (accessTokenConverter instanceof JwtAccessTokenConverter jwtAccessTokenConverter) {
+		if (accessTokenConverter instanceof JwkSetJwtAccessTokenConverter jwkSetJwtAccessTokenConverter) {
+			return new JwksEndpoint(jwkSetJwtAccessTokenConverter.getJwkSet());
+		} else if (accessTokenConverter instanceof JwtAccessTokenConverter jwtAccessTokenConverter) {
 			if (jwtAccessTokenConverter.isPublic()) {
 				String verifierKey = jwtAccessTokenConverter.getKey().get("value");
 				JWK jwk = JWK.parseFromPEMEncodedObjects(verifierKey);
@@ -148,7 +151,7 @@ public class AuthorizationServerEndpointsConfiguration {
 				}
 			}
 		}
-		return null; // Do not register JWKS endpoint
+		return new JwksEndpoint(new JWKSet()); // Register JWKS endpoint with empty JWKSet
 	}
 
 	private JWSAlgorithm detectJWSAlgorithm(String jcaAlgorithm) {

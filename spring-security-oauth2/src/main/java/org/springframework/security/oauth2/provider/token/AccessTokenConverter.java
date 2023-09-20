@@ -29,6 +29,8 @@ public interface AccessTokenConverter {
 
 	final String CLIENT_ID = "client_id";
 
+	final String IAT = "iat";
+
 	final String EXP = "exp";
 
 	final String JTI = "jti";

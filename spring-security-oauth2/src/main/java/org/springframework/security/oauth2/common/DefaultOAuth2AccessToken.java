@@ -22,6 +22,8 @@ public class DefaultOAuth2AccessToken implements Serializable, OAuth2AccessToken
 
 	private String value;
 
+	private Date issuedAt;
+
 	private Date expiration;
 
 	private String tokenType = BEARER_TYPE.toLowerCase();
@@ -56,6 +58,7 @@ public class DefaultOAuth2AccessToken implements Serializable, OAuth2AccessToken
 		this(accessToken.getValue());
 		setAdditionalInformation(accessToken.getAdditionalInformation());
 		setRefreshToken(accessToken.getRefreshToken());
+		setIssuedAt(accessToken.getIssuedAt());
 		setExpiration(accessToken.getExpiration());
 		setScope(accessToken.getScope());
 		setTokenType(accessToken.getTokenType());
@@ -72,6 +75,15 @@ public class DefaultOAuth2AccessToken implements Serializable, OAuth2AccessToken
 	 */
 	public String getValue() {
 		return value;
+	}
+
+	public void setIssuedAt(Date issuedAt) {
+		this.issuedAt = issuedAt;
+	}
+
+	@Override
+	public Date getIssuedAt() {
+		return issuedAt;
 	}
 
 	public int getExpiresIn() {

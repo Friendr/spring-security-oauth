@@ -72,6 +72,8 @@ public interface OAuth2AccessToken {
 
 	String getTokenType();
 
+	Date getIssuedAt();
+
 	boolean isExpired();
 
 	Date getExpiration();
