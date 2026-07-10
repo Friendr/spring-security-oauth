@@ -70,7 +70,15 @@ abstract class AbstractJaxbMessageConverter<I, E> extends AbstractXmlHttpMessage
 			return convertToExternal(jaxbElement.getValue());
 		}
 		catch (UnmarshalException ex) {
-			throw new HttpMessageNotReadableException("Could not unmarshal to [" + clazz + "]: " + ex.getMessage(), ex);
+			throw new HttpMessageNotReadableException("Could not unmarshal to [" + clazz + "]: " + ex.getMessage(), ex,
+					new org.springframework.http.HttpInputMessage() {
+						public java.io.InputStream getBody() {
+							return java.io.InputStream.nullInputStream();
+						}
+						public HttpHeaders getHeaders() {
+							return headers;
+						}
+					});
 		}
 		catch (JAXBException ex) {
 			throw new HttpMessageConversionException("Could not instantiate JAXBContext: " + ex.getMessage(), ex);

@@ -39,8 +39,8 @@ import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.security.oauth2.provider.token.store.InMemoryTokenStore;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.DefaultSecurityFilterChain;
-import org.springframework.security.web.FilterInvocation;
 import org.springframework.security.web.access.AccessDeniedHandler;
+import org.springframework.security.web.access.intercept.RequestAuthorizationContext;
 import org.springframework.security.web.authentication.preauth.AbstractPreAuthenticatedProcessingFilter;
 import org.springframework.security.web.util.matcher.MediaTypeRequestMatcher;
 import org.springframework.util.Assert;
@@ -74,7 +74,7 @@ public final class ResourceServerSecurityConfigurer extends
 
 	private String resourceId = "oauth2-resource";
 
-	private SecurityExpressionHandler<FilterInvocation> expressionHandler = new OAuth2WebSecurityExpressionHandler();
+	private SecurityExpressionHandler<RequestAuthorizationContext> expressionHandler = new OAuth2WebSecurityExpressionHandler();
 
 	private TokenExtractor tokenExtractor;
 
@@ -127,10 +127,20 @@ public final class ResourceServerSecurityConfigurer extends
 	}
 
 	public ResourceServerSecurityConfigurer expressionHandler(
-			SecurityExpressionHandler<FilterInvocation> expressionHandler) {
+			SecurityExpressionHandler<RequestAuthorizationContext> expressionHandler) {
 		Assert.state(expressionHandler != null, "SecurityExpressionHandler cannot be null");
 		this.expressionHandler = expressionHandler;
 		return this;
+	}
+
+	/**
+	 * The expression handler carrying the {@code #oauth2} expression methods. Since Spring Security 7 removed
+	 * expression-handler registration on the request authorization DSL, use this with
+	 * {@code WebExpressionAuthorizationManager.withExpressionHandler(...)} when writing {@code #oauth2} access
+	 * expressions.
+	 */
+	public SecurityExpressionHandler<RequestAuthorizationContext> getExpressionHandler() {
+		return this.expressionHandler;
 	}
 
 	public ResourceServerSecurityConfigurer tokenExtractor(TokenExtractor tokenExtractor) {
@@ -166,7 +176,7 @@ public final class ResourceServerSecurityConfigurer extends
 	}
 
 	@Override
-	public void init(HttpSecurity http) throws Exception {
+	public void init(HttpSecurity http) {
 		registerDefaultAuthenticationEntryPoint(http);
 	}
 
@@ -198,7 +208,7 @@ public final class ResourceServerSecurityConfigurer extends
 	}
 
 	@Override
-	public void configure(HttpSecurity http) throws Exception {
+	public void configure(HttpSecurity http) {
 
 		AuthenticationManager oauthAuthenticationManager = oauthAuthenticationManager(http);
 		resourcesServerFilter = new OAuth2AuthenticationProcessingFilter();
@@ -218,12 +228,10 @@ public final class ResourceServerSecurityConfigurer extends
 
 		// @formatter:off
 		http
-			.authorizeRequests().expressionHandler(expressionHandler)
-		.and()
 			.addFilterBefore(resourcesServerFilter, AbstractPreAuthenticatedProcessingFilter.class)
-			.exceptionHandling()
+			.exceptionHandling(exceptions -> exceptions
 				.accessDeniedHandler(accessDeniedHandler)
-				.authenticationEntryPoint(authenticationEntryPoint);
+				.authenticationEntryPoint(authenticationEntryPoint));
 		// @formatter:on
 	}
 

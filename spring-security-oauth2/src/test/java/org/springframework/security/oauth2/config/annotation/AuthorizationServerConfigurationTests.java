@@ -37,7 +37,7 @@ import org.springframework.security.authentication.TestingAuthenticationProvider
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.servlet.configuration.EnableWebMvcSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.authentication.AuthenticationManagerBeanDefinitionParser;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.userdetails.User;
@@ -163,13 +163,13 @@ public class AuthorizationServerConfigurationTests {
 	}
 
 	@Configuration
-	@EnableWebMvcSecurity
+	@EnableWebSecurity
 	@EnableAuthorizationServer
 	protected static class AuthorizationServerUnconfigured {
 	}
 
 	@Configuration
-	@EnableWebMvcSecurity
+	@EnableWebSecurity
 	@EnableAuthorizationServer
 	protected static class AuthorizationServerVanilla extends AuthorizationServerConfigurerAdapter implements Runnable {
 		@Autowired
@@ -212,7 +212,7 @@ public class AuthorizationServerConfigurationTests {
 	}
 
 	@Configuration
-	@EnableWebMvcSecurity
+	@EnableWebSecurity
 	@EnableAuthorizationServer
 	protected static class AuthorizationServerCycle extends AuthorizationServerConfigurerAdapter implements Runnable {
 		@Autowired
@@ -239,7 +239,7 @@ public class AuthorizationServerConfigurationTests {
 	}
 
 	@Configuration
-	@EnableWebMvcSecurity
+	@EnableWebSecurity
 	@EnableAuthorizationServer
 	protected static class AuthorizationServerDisableApproval extends AuthorizationServerConfigurerAdapter
 			implements Runnable {
@@ -274,7 +274,7 @@ public class AuthorizationServerConfigurationTests {
 	}
 
 	@Configuration
-	@EnableWebMvcSecurity
+	@EnableWebSecurity
 	@EnableAuthorizationServer
 	protected static class AuthorizationServerAllowsSpecificRequestMethods extends AuthorizationServerConfigurerAdapter
 			implements Runnable {
@@ -306,7 +306,7 @@ public class AuthorizationServerConfigurationTests {
 	}
 
 	@Configuration
-	@EnableWebMvcSecurity
+	@EnableWebSecurity
 	@EnableAuthorizationServer
 	protected static class AuthorizationServerAllowsOnlyPost extends AuthorizationServerConfigurerAdapter
 			implements Runnable {
@@ -332,7 +332,7 @@ public class AuthorizationServerConfigurationTests {
 	}
 
 	@Configuration
-	@EnableWebMvcSecurity
+	@EnableWebSecurity
 	@EnableAuthorizationServer
 	protected static class AuthorizationServerExtras extends AuthorizationServerConfigurerAdapter implements Runnable {
 
@@ -384,7 +384,7 @@ public class AuthorizationServerConfigurationTests {
 	}
 
 	@Configuration
-	@EnableWebMvcSecurity
+	@EnableWebSecurity
 	@EnableAuthorizationServer
 	protected static class AuthorizationServerJdbc extends AuthorizationServerConfigurerAdapter {
 
@@ -408,7 +408,7 @@ public class AuthorizationServerConfigurationTests {
 	}
 
 	@Configuration
-	@EnableWebMvcSecurity
+	@EnableWebSecurity
 	@EnableAuthorizationServer
 	protected static class AuthorizationServerEncoder extends AuthorizationServerConfigurerAdapter {
 
@@ -428,7 +428,7 @@ public class AuthorizationServerConfigurationTests {
 	}
 
 	@Configuration
-	@EnableWebMvcSecurity
+	@EnableWebSecurity
 	@EnableAuthorizationServer
 	protected static class AuthorizationServerJwt extends AuthorizationServerConfigurerAdapter {
 
@@ -457,7 +457,7 @@ public class AuthorizationServerConfigurationTests {
 	}
 
 	@Configuration
-	@EnableWebMvcSecurity
+	@EnableWebSecurity
 	@EnableAuthorizationServer
 	protected static class AuthorizationServerJwtCustomSigner extends AuthorizationServerConfigurerAdapter {
 
@@ -490,7 +490,7 @@ public class AuthorizationServerConfigurationTests {
 	}
 
 	@Configuration
-	@EnableWebMvcSecurity
+	@EnableWebSecurity
 	@EnableAuthorizationServer
 	protected static class AuthorizationServerWithTokenServices extends AuthorizationServerConfigurerAdapter
 			implements Runnable {
@@ -536,7 +536,7 @@ public class AuthorizationServerConfigurationTests {
 	}
 
 	@Configuration
-	@EnableWebMvcSecurity
+	@EnableWebSecurity
 	@EnableAuthorizationServer
 	protected static class AuthorizationServerApproval extends AuthorizationServerConfigurerAdapter
 			implements Runnable {
@@ -612,7 +612,7 @@ public class AuthorizationServerConfigurationTests {
 	}
 
 	@Configuration
-	@EnableWebMvcSecurity
+	@EnableWebSecurity
 	@EnableAuthorizationServer
 	protected static class AuthorizationServerExceptionTranslator extends AuthorizationServerConfigurerAdapter
 			implements Runnable {
@@ -645,7 +645,7 @@ public class AuthorizationServerConfigurationTests {
 	}
 
 	@Configuration
-	@EnableWebMvcSecurity
+	@EnableWebSecurity
 	@EnableAuthorizationServer
 	protected static class AuthorizationServerCustomGranter extends AuthorizationServerConfigurerAdapter
 			implements Runnable {
@@ -669,7 +669,7 @@ public class AuthorizationServerConfigurationTests {
 	}
 
 	@Configuration
-	@EnableWebMvcSecurity
+	@EnableWebSecurity
 	@EnableAuthorizationServer
 	// Stuff that can't be autowired
 	protected static class AuthorizationServerTypes extends AuthorizationServerConfigurerAdapter {
@@ -691,7 +691,7 @@ public class AuthorizationServerConfigurationTests {
 	}
 
 	@Configuration
-	@EnableWebMvcSecurity
+	@EnableWebSecurity
 	@EnableAuthorizationServer
 	protected static class AuthorizationServerCustomClientDetails extends AuthorizationServerConfigurerAdapter
 			implements Runnable {
@@ -712,7 +712,7 @@ public class AuthorizationServerConfigurationTests {
 	}
 
 	@Configuration
-	@EnableWebMvcSecurity
+	@EnableWebSecurity
 	@EnableAuthorizationServer
 	protected static class AuthorizationServerCustomUserDetails extends AuthorizationServerConfigurerAdapter
 			implements Runnable {
@@ -754,7 +754,7 @@ public class AuthorizationServerConfigurationTests {
 	}
 
 	@Configuration
-	@EnableWebMvcSecurity
+	@EnableWebSecurity
 	@EnableAuthorizationServer
 	protected static class AuthorizationServerCustomAuthenticationProvidersOnTokenEndpoint extends
 			AuthorizationServerConfigurerAdapter implements Runnable {
@@ -803,7 +803,7 @@ public class AuthorizationServerConfigurationTests {
 	}	
 
 	@Configuration
-	@EnableWebMvcSecurity
+	@EnableWebSecurity
 	@EnableAuthorizationServer
 	protected static class AuthorizationServerDefaultAuthenticationProviderOnTokenEndpoint extends
 			AuthorizationServerConfigurerAdapter implements Runnable {
@@ -842,7 +842,7 @@ public class AuthorizationServerConfigurationTests {
 	}
 
 	@Configuration
-	@EnableWebMvcSecurity
+	@EnableWebSecurity
 	@EnableAuthorizationServer
 	protected static class AuthorizationServerCustomAuthenticationEventPublisher extends
 			AuthorizationServerConfigurerAdapter implements Runnable {

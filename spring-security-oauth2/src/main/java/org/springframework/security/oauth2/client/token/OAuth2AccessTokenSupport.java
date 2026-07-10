@@ -32,6 +32,7 @@ import org.springframework.web.client.RestOperations;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
+import java.net.URI;
 import java.net.HttpURLConnection;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -128,7 +129,7 @@ public abstract class OAuth2AccessTokenSupport {
 			ResponseExtractor<OAuth2AccessToken> extractor = new ResponseExtractor<OAuth2AccessToken>() {
 				@Override
 				public OAuth2AccessToken extractData(ClientHttpResponse response) throws IOException {
-					if (response.getHeaders().containsKey("Set-Cookie")) {
+					if (response.getHeaders().containsHeader("Set-Cookie")) {
 						copy.setCookie(response.getHeaders().getFirst("Set-Cookie"));
 					}
 					return delegate.extractData(response);
@@ -229,7 +230,7 @@ public abstract class OAuth2AccessTokenSupport {
 
 		@SuppressWarnings("unchecked")
 		@Override
-		public void handleError(ClientHttpResponse response) throws IOException {
+		public void handleError(URI url, HttpMethod method, ClientHttpResponse response) throws IOException {
 			for (HttpMessageConverter<?> converter : messageConverters) {
 				if (converter.canRead(OAuth2Exception.class, response.getHeaders().getContentType())) {
 					OAuth2Exception ex;
@@ -243,7 +244,7 @@ public abstract class OAuth2AccessTokenSupport {
 					throw ex;
 				}
 			}
-			super.handleError(response);
+			super.handleError(url, method, response);
 		}
 
 	}

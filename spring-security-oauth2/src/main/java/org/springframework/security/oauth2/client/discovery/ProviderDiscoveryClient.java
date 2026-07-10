@@ -49,7 +49,7 @@ public class ProviderDiscoveryClient {
 	public ProviderDiscoveryClient(String providerLocationUri) {
 		Assert.hasText(providerLocationUri, "providerLocationUri cannot be empty");
 		try {
-			this.providerLocation = UriComponentsBuilder.fromHttpUrl(providerLocationUri)
+			this.providerLocation = UriComponentsBuilder.fromUriString(providerLocationUri)
 					.path(PROVIDER_END_PATH)
 					.build()
 					.encode()

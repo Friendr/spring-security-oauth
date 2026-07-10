@@ -3,7 +3,7 @@ package org.springframework.security.oauth2.client.token.auth;
 import java.io.UnsupportedEncodingException;
 
 import org.springframework.http.HttpHeaders;
-import org.springframework.security.crypto.codec.Base64;
+import java.util.Base64;
 import org.springframework.security.oauth2.client.resource.OAuth2ProtectedResourceDetails;
 import org.springframework.security.oauth2.common.AuthenticationScheme;
 import org.springframework.util.MultiValueMap;
@@ -35,8 +35,8 @@ public class DefaultClientAuthenticationHandler implements ClientAuthenticationH
 							"Authorization",
 							String.format(
 									"Basic %s",
-									new String(Base64.encode(String.format("%s:%s", resource.getClientId(),
-											clientSecret).getBytes("UTF-8")), "UTF-8")));
+									Base64.getEncoder().encodeToString(String.format("%s:%s", resource.getClientId(),
+											clientSecret).getBytes("UTF-8"))));
 					break;
 				case form:
 				case query:

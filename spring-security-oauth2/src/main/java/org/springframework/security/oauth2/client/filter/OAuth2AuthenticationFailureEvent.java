@@ -17,7 +17,7 @@ public class OAuth2AuthenticationFailureEvent extends AbstractAuthenticationFail
 class FailedOAuthClientAuthentication extends AbstractAuthenticationToken {
 
 	public FailedOAuthClientAuthentication() {
-		super(null);
+		super(org.springframework.security.core.authority.AuthorityUtils.NO_AUTHORITIES);
 	}
 
 	@Override

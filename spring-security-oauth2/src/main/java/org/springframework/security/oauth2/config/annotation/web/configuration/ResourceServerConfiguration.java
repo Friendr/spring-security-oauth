@@ -141,13 +141,15 @@ public class ResourceServerConfiguration implements Ordered {
 		http.authenticationProvider(new AnonymousAuthenticationProvider("default"))
 		// N.B. exceptionHandling is duplicated in resources.configure() so that
 		// it works
-		.exceptionHandling()
-				.accessDeniedHandler(resources.getAccessDeniedHandler()).and()
-				.sessionManagement()
-				.sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
-				.csrf().disable();
+		.exceptionHandling(exceptions -> exceptions
+				.accessDeniedHandler(resources.getAccessDeniedHandler()))
+		.sessionManagement(sessions -> sessions
+				.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+		.csrf(csrf -> csrf.disable());
 		// @formatter:on
-		http.apply(resources);
+		// Security 7 removed the apply(SecurityConfigurerAdapter) overload that wired the builder;
+		// with() is its replacement and calls setBuilder() so the configurer can use getBuilder().
+		http.with(resources);
 		if (endpoints != null) {
 			// Assume we are in an Authorization Server
 			http.securityMatcher(new NotOAuthRequestMatcher(endpoints.oauth2EndpointHandlerMapping()));
@@ -160,7 +162,7 @@ public class ResourceServerConfiguration implements Ordered {
 			// Add anyRequest() last as a fall back. Spring Security would
 			// replace an existing anyRequest() matcher with this one, so to
 			// avoid that we only add it if the user hasn't configured anything.
-			http.authorizeRequests().anyRequest().authenticated();
+			http.authorizeHttpRequests(authorize -> authorize.anyRequest().authenticated());
 		}
 
 		return http.build();

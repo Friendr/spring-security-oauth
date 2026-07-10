@@ -33,6 +33,7 @@ import org.springframework.http.server.ServerHttpResponse;
 import org.springframework.http.server.ServletServerHttpRequest;
 import org.springframework.http.server.ServletServerHttpResponse;
 import org.springframework.security.oauth2.http.converter.jaxb.JaxbOAuth2ExceptionMessageConverter;
+import org.springframework.util.MimeTypeUtils;
 import org.springframework.web.HttpMediaTypeNotAcceptableException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.context.request.NativeWebRequest;
@@ -86,7 +87,7 @@ public class DefaultOAuth2ExceptionRenderer implements OAuth2ExceptionRenderer {
 		if (acceptedMediaTypes.isEmpty()) {
 			acceptedMediaTypes = Collections.singletonList(MediaType.ALL);
 		}
-		MediaType.sortByQualityValue(acceptedMediaTypes);
+		MimeTypeUtils.sortBySpecificity(acceptedMediaTypes);
 		Class<?> returnValueType = returnValue.getClass();
 		List<MediaType> allSupportedMediaTypes = new ArrayList<MediaType>();
 		for (MediaType acceptedMediaType : acceptedMediaTypes) {

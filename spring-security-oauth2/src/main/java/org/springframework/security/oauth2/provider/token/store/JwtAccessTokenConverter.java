@@ -15,7 +15,7 @@ package org.springframework.security.oauth2.provider.token.store;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.security.crypto.codec.Base64;
+import java.util.Base64;
 import org.springframework.security.jwt.Jwt;
 import org.springframework.security.jwt.JwtHelper;
 import org.springframework.security.jwt.crypto.sign.*;
@@ -157,7 +157,7 @@ public class JwtAccessTokenConverter implements TokenEnhancer, AccessTokenConver
 		signer = new RsaSigner((RSAPrivateKey) privateKey);
 		RSAPublicKey publicKey = (RSAPublicKey) keyPair.getPublic();
 		verifier = new RsaVerifier(publicKey);
-		verifierKey = "-----BEGIN PUBLIC KEY-----\n" + new String(Base64.encode(publicKey.getEncoded()))
+		verifierKey = "-----BEGIN PUBLIC KEY-----\n" + Base64.getEncoder().encodeToString(publicKey.getEncoded())
 				+ "\n-----END PUBLIC KEY-----";
 	}
 
@@ -168,7 +168,7 @@ public class JwtAccessTokenConverter implements TokenEnhancer, AccessTokenConver
 	 * @param key the key to be used for signing JWTs.
 	 */
 	public void setSigningKey(String key) {
-		Assert.hasText(key);
+		Assert.hasText(key, "key must not be empty");
 		key = key.trim();
 
 		this.signingKey = key;

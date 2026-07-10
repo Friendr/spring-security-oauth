@@ -24,7 +24,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.crypto.codec.Base64;
+import java.util.Base64;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.config.annotation.configurers.ClientDetailsServiceConfigurer;
@@ -105,7 +105,7 @@ public class Gh501EnableAuthorizationServerTests {
 		try {
 			toEncode = (userName + ":" + password).getBytes("UTF-8");
 		} catch (UnsupportedEncodingException e) { }
-		headerValue += new String(Base64.encode(toEncode));
+		headerValue += Base64.getEncoder().encodeToString(toEncode);
 		return headerValue;
 	}
 
