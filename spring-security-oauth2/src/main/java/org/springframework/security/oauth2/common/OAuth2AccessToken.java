@@ -22,6 +22,8 @@ import java.util.Set;
  */
 @com.fasterxml.jackson.databind.annotation.JsonSerialize(using = OAuth2AccessTokenJackson2Serializer.class)
 @com.fasterxml.jackson.databind.annotation.JsonDeserialize(using = OAuth2AccessTokenJackson2Deserializer.class)
+@tools.jackson.databind.annotation.JsonSerialize(using = OAuth2AccessTokenJackson3Serializer.class)
+@tools.jackson.databind.annotation.JsonDeserialize(using = OAuth2AccessTokenJackson3Deserializer.class)
 public interface OAuth2AccessToken {
 
 	public static String BEARER_TYPE = "Bearer";

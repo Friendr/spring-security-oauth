@@ -172,12 +172,13 @@ public class Gh808EnableAuthorizationServerTests {
 					.build();
 		}
 
-//		@Bean
-//		public AuthenticationManager authenticationManagerBean(UserDetailsService userDetailsService) throws Exception {
-//			DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
-//			authenticationProvider.setUserDetailsService(userDetailsService);
-//			return new ProviderManager(authenticationProvider);
-//		}
+		@Bean
+		public AuthenticationManager authenticationManagerBean(UserDetailsService userDetailsService,
+				PasswordEncoder passwordEncoder) {
+			DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider(userDetailsService);
+			authenticationProvider.setPasswordEncoder(passwordEncoder);
+			return new ProviderManager(authenticationProvider);
+		}
 
 		@Bean
 		public UserDetailsService userDetailsService() {

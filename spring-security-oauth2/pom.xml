@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>com.friendr</groupId>
 		<artifactId>spring-security-oauth2-parent</artifactId>
-		<version>3.3.0-SNAPSHOT</version>
+		<version>4.0.0-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>spring-security-oauth2</artifactId>
@@ -13,9 +13,11 @@
 	<description>Module for providing OAuth2 support to Spring Security</description>
 
 	<properties>
-		<jackson2.version>2.15.2</jackson2.version>
+		<jackson2.version>2.22.1</jackson2.version>
+		<!-- jackson-annotations has no patch releases and is shared by Jackson 2 and Jackson 3 -->
+		<jackson2-annotations.version>2.22</jackson2-annotations.version>
+		<jackson3.version>3.2.1</jackson3.version>
 		<jakarta-servlet.version>6.0.0</jakarta-servlet.version>
-		<powermock.version>1.7.4</powermock.version>
 
 		<maven.install.skip>false</maven.install.skip>
 		<maven.deploy.skip>false</maven.deploy.skip>
@@ -173,7 +175,7 @@
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-annotations</artifactId>
-            <version>${jackson2.version}</version>
+            <version>${jackson2-annotations.version}</version>
             <optional>true</optional>
         </dependency>
 
@@ -181,6 +183,15 @@
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
             <version>${jackson2.version}</version>
+            <optional>true</optional>
+        </dependency>
+
+        <dependency>
+            <!-- Jackson 3 (tools.jackson) — the token/exception classes carry dual annotations so they
+                 serialize identically under Jackson 2 and Jackson 3 (Spring Boot 4) consumers. -->
+            <groupId>tools.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>${jackson3.version}</version>
             <optional>true</optional>
         </dependency>
 
@@ -218,20 +229,6 @@
 			<version>${junit.version}</version>
 			<scope>compile</scope>
 			<optional>true</optional>
-		</dependency>
-
-		<dependency>
-			<groupId>org.powermock</groupId>
-			<artifactId>powermock-module-junit4</artifactId>
-			<version>${powermock.version}</version>
-			<scope>test</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>org.powermock</groupId>
-			<artifactId>powermock-api-mockito</artifactId>
-			<version>${powermock.version}</version>
-			<scope>test</scope>
 		</dependency>
 
 		<dependency>

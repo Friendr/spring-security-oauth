@@ -35,22 +35,27 @@ public class BaseClientDetails implements ClientDetails {
 	private String clientSecret;
 
 	@com.fasterxml.jackson.databind.annotation.JsonDeserialize(using = Jackson2ArrayOrStringDeserializer.class)
+	@tools.jackson.databind.annotation.JsonDeserialize(using = Jackson3ArrayOrStringDeserializer.class)
 	private Set<String> scope = Collections.emptySet();
 
 	@com.fasterxml.jackson.annotation.JsonProperty("resource_ids")
 	@com.fasterxml.jackson.databind.annotation.JsonDeserialize(using = Jackson2ArrayOrStringDeserializer.class)
+	@tools.jackson.databind.annotation.JsonDeserialize(using = Jackson3ArrayOrStringDeserializer.class)
 	private Set<String> resourceIds = Collections.emptySet();
 
 	@com.fasterxml.jackson.annotation.JsonProperty("authorized_grant_types")
 	@com.fasterxml.jackson.databind.annotation.JsonDeserialize(using = Jackson2ArrayOrStringDeserializer.class)
+	@tools.jackson.databind.annotation.JsonDeserialize(using = Jackson3ArrayOrStringDeserializer.class)
 	private Set<String> authorizedGrantTypes = Collections.emptySet();
 
 	@com.fasterxml.jackson.annotation.JsonProperty("redirect_uri")
 	@com.fasterxml.jackson.databind.annotation.JsonDeserialize(using = Jackson2ArrayOrStringDeserializer.class)
+	@tools.jackson.databind.annotation.JsonDeserialize(using = Jackson3ArrayOrStringDeserializer.class)
 	private Set<String> registeredRedirectUris;
 
 	@com.fasterxml.jackson.annotation.JsonProperty("autoapprove")
 	@com.fasterxml.jackson.databind.annotation.JsonDeserialize(using = Jackson2ArrayOrStringDeserializer.class)
+	@tools.jackson.databind.annotation.JsonDeserialize(using = Jackson3ArrayOrStringDeserializer.class)
 	private Set<String> autoApproveScopes;
 
 	private List<GrantedAuthority> authorities = Collections.emptyList();
@@ -223,6 +228,7 @@ public class BaseClientDetails implements ClientDetails {
 
 	@com.fasterxml.jackson.annotation.JsonProperty("authorities")
 	@com.fasterxml.jackson.databind.annotation.JsonDeserialize(using = Jackson2ArrayOrStringDeserializer.class)
+	@tools.jackson.databind.annotation.JsonDeserialize(using = Jackson3ArrayOrStringDeserializer.class)
 	private void setAuthoritiesAsStrings(Set<String> values) {
 		setAuthorities(AuthorityUtils.createAuthorityList(values
 				.toArray(new String[values.size()])));

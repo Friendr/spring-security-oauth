@@ -17,9 +17,8 @@ package org.springframework.security.oauth2.provider.token.store.jwk;
 
 import org.apache.commons.codec.Charsets;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 import org.springframework.security.jwt.codec.Codecs;
 import org.springframework.security.jwt.crypto.sign.SignatureVerifier;
 
@@ -29,16 +28,12 @@ import java.net.URL;
 import java.util.Arrays;
 import java.util.Collections;
 
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.when;
-import static org.powermock.api.mockito.PowerMockito.*;
+import static org.mockito.ArgumentMatchers.any;
 
 
 /**
  * @author Joe Grandja
  */
-@RunWith(PowerMockRunner.class)
-@PrepareForTest(JwkDefinitionSource.class)
 public class JwkDefinitionSourceTests {
 	private static final String DEFAULT_JWK_SET_URL = "https://identity.server1.io/token_keys";
 
@@ -54,11 +49,13 @@ public class JwkDefinitionSourceTests {
 
 	@Test
 	public void getDefinitionLoadIfNecessaryWhenKeyIdNotFoundThenLoadJwkDefinitions() throws Exception {
-		JwkDefinitionSource jwkDefinitionSource = spy(new JwkDefinitionSource(DEFAULT_JWK_SET_URL));
-		mockStatic(JwkDefinitionSource.class);
-		when(JwkDefinitionSource.loadJwkDefinitions(any(URL.class))).thenReturn(Collections.<String, JwkDefinitionSource.JwkDefinitionHolder>emptyMap());
-		jwkDefinitionSource.getDefinitionLoadIfNecessary("invalid-key-id", null);
-		verifyStatic();
+		JwkDefinitionSource jwkDefinitionSource = new JwkDefinitionSource(DEFAULT_JWK_SET_URL);
+		try (MockedStatic<JwkDefinitionSource> mockedStatic = Mockito.mockStatic(JwkDefinitionSource.class)) {
+			mockedStatic.when(() -> JwkDefinitionSource.loadJwkDefinitions(any(URL.class)))
+					.thenReturn(Collections.<String, JwkDefinitionSource.JwkDefinitionHolder>emptyMap());
+			jwkDefinitionSource.getDefinitionLoadIfNecessary("invalid-key-id", null);
+			mockedStatic.verify(() -> JwkDefinitionSource.loadJwkDefinitions(any(URL.class)));
+		}
 	}
 
 	// gh-1010

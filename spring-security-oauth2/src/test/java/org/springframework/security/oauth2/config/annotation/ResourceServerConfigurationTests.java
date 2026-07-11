@@ -26,6 +26,9 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
+import org.springframework.core.annotation.Order;
+import org.springframework.security.config.Customizer;
+import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockServletContext;
@@ -121,7 +124,7 @@ public class ResourceServerConfigurationTests {
 		mvc.perform(MockMvcRequestBuilders.post("/oauth/token"))
 				.andExpect(MockMvcResultMatchers.header().string("WWW-Authenticate", containsString("Basic")));
 		mvc.perform(MockMvcRequestBuilders.get("/oauth/authorize").accept(MediaType.TEXT_HTML))
-				.andExpect(MockMvcResultMatchers.redirectedUrl("http://localhost/login"));
+				.andExpect(MockMvcResultMatchers.redirectedUrl("/login"));
 		mvc.perform(MockMvcRequestBuilders.post("/oauth/token").header("Authorization",
 				"Basic " + Base64.getEncoder().encodeToString("client:secret".getBytes())))
 				.andExpect(MockMvcResultMatchers.content().string(containsString("Missing grant type")));
@@ -140,7 +143,7 @@ public class ResourceServerConfigurationTests {
 		mvc.perform(MockMvcRequestBuilders.post("/token"))
 				.andExpect(MockMvcResultMatchers.header().string("WWW-Authenticate", containsString("Basic")));
 		mvc.perform(MockMvcRequestBuilders.get("/authorize").accept(MediaType.TEXT_HTML))
-				.andExpect(MockMvcResultMatchers.redirectedUrl("http://localhost/login"));
+				.andExpect(MockMvcResultMatchers.redirectedUrl("/login"));
 		mvc.perform(MockMvcRequestBuilders.post("/token").header("Authorization",
 				"Basic " + Base64.getEncoder().encodeToString("client:secret".getBytes())))
 				.andExpect(MockMvcResultMatchers.content().string(containsString("Missing grant type")));
@@ -261,6 +264,18 @@ public class ResourceServerConfigurationTests {
 			public PasswordEncoder passwordEncoder() {
 				return NoOpPasswordEncoder.getInstance();
 			}
+
+			// Spring Security only auto-creates its default (form login) chain when no
+			// SecurityFilterChain beans exist at all, and the authorization/resource server
+			// configurations register such beans - so declare the login chain explicitly.
+			@Bean
+			@Order(100)
+			public SecurityFilterChain defaultLoginSecurityFilterChain(HttpSecurity http) throws Exception {
+				return http
+						.authorizeHttpRequests(authorize -> authorize.anyRequest().authenticated())
+						.formLogin(Customizer.withDefaults())
+						.build();
+			}
 		}
 	}
 
@@ -286,6 +301,15 @@ public class ResourceServerConfigurationTests {
 			@Bean
 			public PasswordEncoder passwordEncoder() {
 				return NoOpPasswordEncoder.getInstance();
+			}
+
+			@Bean
+			@Order(100)
+			public SecurityFilterChain defaultLoginSecurityFilterChain(HttpSecurity http) throws Exception {
+				return http
+						.authorizeHttpRequests(authorize -> authorize.anyRequest().authenticated())
+						.formLogin(Customizer.withDefaults())
+						.build();
 			}
 		}
 	}

@@ -14,6 +14,7 @@ package org.springframework.security.oauth2.http.converter.jaxb;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -23,7 +24,6 @@ import java.util.Date;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.springframework.security.oauth2.common.DefaultOAuth2AccessToken;
 import org.springframework.security.oauth2.common.OAuth2RefreshToken;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
@@ -34,7 +34,6 @@ import org.springframework.security.oauth2.common.DefaultOAuth2RefreshToken;
  * @author Rob Winch
  *
  */
-@PrepareForTest(JaxbOAuth2AccessToken.class)
 public class JaxbOAuth2AccessTokenMessageConverterTests extends BaseJaxbMessageConverterTest {
 	private JaxbOAuth2AccessTokenMessageConverter converter;
 	private DefaultOAuth2AccessToken accessToken;
@@ -137,7 +136,9 @@ public class JaxbOAuth2AccessTokenMessageConverterTests extends BaseJaxbMessageC
 			assertNull(actual.getExpiration());
 		}
 		else {
-			assertEquals(expectedExpiration.getTime(), actual.getExpiration().getTime());
+			// the clock is no longer frozen (PowerMock removal), so allow a small drift
+			long delta = Math.abs(expectedExpiration.getTime() - actual.getExpiration().getTime());
+			assertTrue("expiration drift too large: " + delta + "ms", delta < EXPIRATION_TOLERANCE_MILLIS);
 		}
 	}
 }

@@ -24,6 +24,8 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import org.springframework.security.oauth2.common.util.JsonDateDeserializer;
+import org.springframework.security.oauth2.common.util.JsonDateJackson3Deserializer;
+import org.springframework.security.oauth2.common.util.JsonDateJackson3Serializer;
 import org.springframework.security.oauth2.common.util.JsonDateSerializer;
 
 /**
@@ -32,6 +34,8 @@ import org.springframework.security.oauth2.common.util.JsonDateSerializer;
  *
  */
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
+// Shared core annotation, honored by Jackson 2 and Jackson 3 alike (same NON_NULL semantics as above)
+@com.fasterxml.jackson.annotation.JsonInclude(com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL)
 public class Approval {
 
 	private String userId;
@@ -98,11 +102,13 @@ public class Approval {
 	}
 
 	@JsonSerialize(using = JsonDateSerializer.class, include = JsonSerialize.Inclusion.NON_NULL)
+	@tools.jackson.databind.annotation.JsonSerialize(using = JsonDateJackson3Serializer.class)
 	public Date getExpiresAt() {
 		return expiresAt;
 	}
 
 	@JsonDeserialize(using = JsonDateDeserializer.class)
+	@tools.jackson.databind.annotation.JsonDeserialize(using = JsonDateJackson3Deserializer.class)
 	public void setExpiresAt(Date expiresAt) {
 		if (expiresAt == null) {
 			Calendar thirtyMinFromNow = Calendar.getInstance();
@@ -113,11 +119,13 @@ public class Approval {
 	}
 
 	@JsonSerialize(using = JsonDateSerializer.class, include = JsonSerialize.Inclusion.NON_NULL)
+	@tools.jackson.databind.annotation.JsonSerialize(using = JsonDateJackson3Serializer.class)
 	public Date getLastUpdatedAt() {
 		return lastUpdatedAt;
 	}
 
 	@JsonDeserialize(using = JsonDateDeserializer.class)
+	@tools.jackson.databind.annotation.JsonDeserialize(using = JsonDateJackson3Deserializer.class)
 	public void setLastUpdatedAt(Date lastUpdatedAt) {
 		this.lastUpdatedAt = lastUpdatedAt;
 	}

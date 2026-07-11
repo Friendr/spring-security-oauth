@@ -18,11 +18,8 @@ package org.springframework.security.oauth2.provider.token.store.jwk;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.junit.runner.RunWith;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
 import org.springframework.security.jwt.crypto.sign.SignatureVerifier;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
@@ -37,17 +34,15 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.*;
-import static org.powermock.api.mockito.PowerMockito.spy;
 
 
 /**
  * @author Joe Grandja
  */
-@RunWith(PowerMockRunner.class)
-@PrepareForTest(JwkTokenStore.class)
 public class JwkTokenStoreTests {
 	private JwkTokenStore jwkTokenStore = new JwkTokenStore("https://identity.server1.io/token_keys");
 
@@ -78,7 +73,7 @@ public class JwkTokenStoreTests {
 		field.setAccessible(true);
 		ReflectionUtils.setField(field, spy, delegate);
 
-		spy.readAuthentication(anyString());
+		spy.readAuthentication("token");
 		verify(delegate).readAuthentication(anyString());
 	}
 
@@ -86,7 +81,7 @@ public class JwkTokenStoreTests {
 	@Test
 	public void readAuthenticationUsingCustomAccessTokenConverterThenAuthenticationDetailsContainsClaims() throws Exception {
 		AccessTokenConverter customAccessTokenConverter = mock(AccessTokenConverter.class);
-		when(customAccessTokenConverter.extractAuthentication(anyMapOf(String.class, String.class))).thenAnswer(new Answer<OAuth2Authentication>() {
+		when(customAccessTokenConverter.extractAuthentication(anyMap())).thenAnswer(new Answer<OAuth2Authentication>() {
 			@Override
 			public OAuth2Authentication answer(InvocationOnMock invocation) throws Throwable {
 				Map<String, String> claims = (Map<String, String>)invocation.getArguments()[0];
@@ -114,7 +109,7 @@ public class JwkTokenStoreTests {
 		field.setAccessible(true);
 		ReflectionUtils.setField(field, spy, delegate);
 
-		OAuth2Authentication authentication = spy.readAuthentication(anyString());
+		OAuth2Authentication authentication = spy.readAuthentication("token");
 		assertEquals(claims, authentication.getDetails());
 	}
 
@@ -129,7 +124,7 @@ public class JwkTokenStoreTests {
 		when(jwkDefinitionHolder.getSignatureVerifier()).thenReturn(mock(SignatureVerifier.class));
 
 		JwkDefinitionSource jwkDefinitionSource = mock(JwkDefinitionSource.class);
-		when(jwkDefinitionSource.getDefinitionLoadIfNecessary(anyString(), anyString())).thenReturn(jwkDefinitionHolder);
+		when(jwkDefinitionSource.getDefinitionLoadIfNecessary(anyString(), nullable(String.class))).thenReturn(jwkDefinitionHolder);
 
 		JwkVerifyingJwtAccessTokenConverter jwtVerifyingAccessTokenConverter =
 				new JwkVerifyingJwtAccessTokenConverter(jwkDefinitionSource);
@@ -158,7 +153,7 @@ public class JwkTokenStoreTests {
 		field.setAccessible(true);
 		ReflectionUtils.setField(field, spy, delegate);
 
-		spy.readAccessToken(anyString());
+		spy.readAccessToken("token");
 		verify(delegate).readAccessToken(anyString());
 	}
 
@@ -173,7 +168,7 @@ public class JwkTokenStoreTests {
 		field.setAccessible(true);
 		ReflectionUtils.setField(field, spy, delegate);
 
-		spy.removeAccessToken(any(OAuth2AccessToken.class));
+		spy.removeAccessToken(mock(OAuth2AccessToken.class));
 		verify(delegate).removeAccessToken(any(OAuth2AccessToken.class));
 	}
 

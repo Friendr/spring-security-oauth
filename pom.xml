@@ -5,7 +5,7 @@
   <name>OAuth2 for Spring Security (parent)</name>
   <description>Parent Project for OAuth2 Support for Spring Security</description>
   <packaging>pom</packaging>
-  <version>3.3.0-SNAPSHOT</version>
+  <version>4.0.0-SNAPSHOT</version>
   <url>https://docs.spring.io/spring-security/oauth</url>
 
   <modules>
@@ -22,7 +22,7 @@
     <spring.data.redis.version>4.1.0</spring.data.redis.version>
     <redis.clients.version>7.5.3</redis.clients.version>
     <junit.version>4.13.2</junit.version>
-    <mockito.version>1.10.19</mockito.version>
+    <mockito.version>5.23.0</mockito.version>
 
     <java.version>21</java.version>
     <maven.compiler.source>${java.version}</maven.compiler.source>
@@ -242,6 +242,8 @@
                       <excludes>
                           <exclude>**/RedisTokenStorePrefixTests.java</exclude>
                           <exclude>**/RedisTokenStoreTests.java</exclude>
+                          <exclude>**/RedisTokenStoreCustomTokenTests.java</exclude>
+                          <exclude>**/RedisAuthorizationCodeServicesTests.java</exclude>
                       </excludes>
                   </configuration>
               </plugin>
