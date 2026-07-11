@@ -160,6 +160,12 @@ public final class AuthorizationServerSecurityConfigurer extends
 	public void init(HttpSecurity http) throws Exception {
 		registerDefaultAuthenticationEntryPoint(http);
 		AuthenticationManagerBuilder builder = http.getSharedObject(AuthenticationManagerBuilder.class);
+		// gh-808: this chain's AuthenticationManager must authenticate 'clients' only. Without this,
+		// the global AuthenticationManager (e.g. built from a UserDetailsService bean) is the parent
+		// and end-user credentials would be accepted as client credentials on the token endpoint.
+		// (The WebSecurityConfigurerAdapter-era code prevented this with an empty configure(auth)
+		// override; that protection was lost in the SecurityFilterChain migration.)
+		builder.parentAuthenticationManager(null);
 		if (authenticationEventPublisher != null) {
 		    builder.authenticationEventPublisher(authenticationEventPublisher);
 		}
