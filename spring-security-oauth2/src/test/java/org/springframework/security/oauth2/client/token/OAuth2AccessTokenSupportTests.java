@@ -33,7 +33,6 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.client.AbstractClientHttpRequest;
-import org.springframework.http.client.AbstractClientHttpResponse;
 import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.ClientHttpResponse;
@@ -130,7 +129,11 @@ public class OAuth2AccessTokenSupportTests {
 		assertEquals(accessToken, retrieveToken);
 	}
 
-	private final class StubHttpClientResponse extends AbstractClientHttpResponse {
+	private final class StubHttpClientResponse implements ClientHttpResponse {
+
+		public org.springframework.http.HttpStatusCode getStatusCode() throws IOException {
+			return status;
+		}
 		private HttpStatus status = HttpStatus.OK;
 
 		private String body;

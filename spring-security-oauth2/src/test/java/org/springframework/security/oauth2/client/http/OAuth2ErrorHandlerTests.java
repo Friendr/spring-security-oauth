@@ -23,8 +23,10 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
+import java.net.URI;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpInputMessage;
 import org.springframework.http.HttpOutputMessage;
 import org.springframework.http.HttpStatus;
@@ -129,7 +131,7 @@ public class OAuth2ErrorHandlerTests {
 		// We lose the www-authenticate content in a nested exception (but it's still available) through the
 		// HttpClientErrorException
 		expected.expectMessage("401 Unauthorized");
-		handler.handleError(response);
+		handler.handleError(URI.create("https://example.com"), HttpMethod.GET, response);
 
 	}
 
@@ -142,7 +144,7 @@ public class OAuth2ErrorHandlerTests {
 
 		expected.expect(AccessTokenRequiredException.class);
 		expected.expectMessage("OAuth2 access denied");
-		handler.handleError(response);
+		handler.handleError(URI.create("https://example.com"), HttpMethod.GET, response);
 
 	}
 
@@ -155,7 +157,7 @@ public class OAuth2ErrorHandlerTests {
 				return true;
 			}
 
-			public void handleError(ClientHttpResponse response) throws IOException {
+			public void handleError(URI url, HttpMethod method, ClientHttpResponse response) throws IOException {
 				throw new RuntimeException("planned");
 			}
 		}, resource);
@@ -164,7 +166,7 @@ public class OAuth2ErrorHandlerTests {
 		ClientHttpResponse response = new TestClientHttpResponse(headers, 401);
 
 		expected.expectMessage("planned");
-		handler.handleError(response);
+		handler.handleError(URI.create("https://example.com"), HttpMethod.GET, response);
 
 	}
 
@@ -174,7 +176,7 @@ public class OAuth2ErrorHandlerTests {
 		ClientHttpResponse response = new TestClientHttpResponse(headers, 500);
 
 		expected.expect(HttpServerErrorException.class);
-		handler.handleError(response);
+		handler.handleError(URI.create("https://example.com"), HttpMethod.GET, response);
 	}
 
 	@Test
@@ -183,7 +185,7 @@ public class OAuth2ErrorHandlerTests {
 		ClientHttpResponse response = new TestClientHttpResponse(headers, 400);
 
 		expected.expect(HttpClientErrorException.class);
-		handler.handleError(response);
+		handler.handleError(URI.create("https://example.com"), HttpMethod.GET, response);
 	}
 
 	@Test
@@ -192,7 +194,7 @@ public class OAuth2ErrorHandlerTests {
 		ClientHttpResponse response = new TestClientHttpResponse(headers, 403);
 
 		expected.expect(HttpClientErrorException.class);
-		handler.handleError(response);
+		handler.handleError(URI.create("https://example.com"), HttpMethod.GET, response);
 	}
 
 	@Test
@@ -204,7 +206,7 @@ public class OAuth2ErrorHandlerTests {
 				new ByteArrayInputStream("{}".getBytes()));
 		handler = new OAuth2ErrorHandler(new DefaultResponseErrorHandler(), resource);
 		expected.expect(HttpClientErrorException.class);
-		handler.handleError(response);
+		handler.handleError(URI.create("https://example.com"), HttpMethod.GET, response);
 	}
 
 	@Test
@@ -215,7 +217,7 @@ public class OAuth2ErrorHandlerTests {
 				return true;
 			}
 
-			public void handleError(ClientHttpResponse response) throws IOException {
+			public void handleError(URI url, HttpMethod method, ClientHttpResponse response) throws IOException {
 				InputStream body = response.getBody();
 				byte[] buf = new byte[appSpecificBodyContent.length()];
 				int readResponse = body.read(buf);
@@ -231,7 +233,7 @@ public class OAuth2ErrorHandlerTests {
 		ClientHttpResponse response = new TestClientHttpResponse(headers, 400, appSpecificErrorBody);
 
 		expected.expectMessage("planned");
-		handler.handleError(response);
+		handler.handleError(URI.create("https://example.com"), HttpMethod.GET, response);
 	}
 
 	@Test
@@ -244,7 +246,7 @@ public class OAuth2ErrorHandlerTests {
 		when(response.getStatusText()).thenReturn(HttpStatus.BAD_REQUEST.toString());
 
 		expected.expect(HttpClientErrorException.class);
-		handler.handleError(response);
+		handler.handleError(URI.create("https://example.com"), HttpMethod.GET, response);
 	}
 
 	// gh-875
@@ -256,7 +258,7 @@ public class OAuth2ErrorHandlerTests {
 		headers.setContentType(MediaType.APPLICATION_JSON);
 		ClientHttpResponse response = new TestClientHttpResponse(headers, 400, messageBody);
 		expected.expect(UserDeniedAuthorizationException.class);
-		handler.handleError(response);
+		handler.handleError(URI.create("https://example.com"), HttpMethod.GET, response);
 	}
 
 	// gh-875
@@ -268,7 +270,7 @@ public class OAuth2ErrorHandlerTests {
 		headers.setContentType(MediaType.APPLICATION_JSON);
 		ClientHttpResponse response = new TestClientHttpResponse(headers, 403, messageBody);
 		expected.expect(OAuth2AccessDeniedException.class);
-		handler.handleError(response);
+		handler.handleError(URI.create("https://example.com"), HttpMethod.GET, response);
 	}
 
 	@Test
@@ -310,6 +312,6 @@ public class OAuth2ErrorHandlerTests {
 		ClientHttpResponse response = new TestClientHttpResponse(headers, 401, appSpecificErrorBody);
 
 		expected.expect(HttpClientErrorException.class);
-		handler.handleError(response);
+		handler.handleError(URI.create("https://example.com"), HttpMethod.GET, response);
 	}
 }

@@ -14,6 +14,8 @@ import java.util.TreeMap;
 @SuppressWarnings("serial")
 @com.fasterxml.jackson.databind.annotation.JsonSerialize(using = OAuth2ExceptionJackson2Serializer.class)
 @com.fasterxml.jackson.databind.annotation.JsonDeserialize(using = OAuth2ExceptionJackson2Deserializer.class)
+@tools.jackson.databind.annotation.JsonSerialize(using = OAuth2ExceptionJackson3Serializer.class)
+@tools.jackson.databind.annotation.JsonDeserialize(using = OAuth2ExceptionJackson3Deserializer.class)
 public class OAuth2Exception extends RuntimeException {
 
 	public static final String ERROR = "error";

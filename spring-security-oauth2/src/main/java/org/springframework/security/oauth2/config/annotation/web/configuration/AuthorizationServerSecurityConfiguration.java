@@ -66,7 +66,9 @@ public class AuthorizationServerSecurityConfiguration {
 		FrameworkEndpointHandlerMapping handlerMapping = endpoints.oauth2EndpointHandlerMapping();
 		http.setSharedObject(FrameworkEndpointHandlerMapping.class, handlerMapping);
 		configure(configurer);
-		http.apply(configurer);
+		// Security 7 removed the apply(SecurityConfigurerAdapter) overload that wired the builder;
+		// with() is its replacement and calls setBuilder() so the configurer can use getBuilder().
+		http.with(configurer);
 		String tokenEndpointPath = handlerMapping.getServletPath("/oauth/token");
 		String tokenKeyPath = handlerMapping.getServletPath("/oauth/token_key");
 		String checkTokenPath = handlerMapping.getServletPath("/oauth/check_token");

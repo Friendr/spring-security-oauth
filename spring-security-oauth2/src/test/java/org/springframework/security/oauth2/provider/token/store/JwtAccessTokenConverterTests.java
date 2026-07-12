@@ -31,8 +31,8 @@ import java.security.KeyPair;
 import java.util.*;
 
 import static org.junit.Assert.*;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyMap;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
@@ -263,7 +263,7 @@ public class JwtAccessTokenConverterTests {
 		private String principal;
 
 		public TestAuthentication(String name, boolean authenticated) {
-			super(null);
+			super((java.util.Collection<? extends org.springframework.security.core.GrantedAuthority>) null);
 			setAuthenticated(authenticated);
 			this.principal = name;
 		}

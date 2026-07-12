@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Before;
 import org.junit.Test;
-import org.powermock.core.classloader.annotations.PrepareForTest;
 
 import java.io.IOException;
 
@@ -16,7 +15,6 @@ import static org.junit.Assert.assertEquals;
  *
  * @author Rob Winch
  */
-@PrepareForTest(OAuth2AccessTokenJackson2Serializer.class)
 public class OAuth2AccessTokenJackson2SerializerTests extends BaseOAuth2AccessTokenJacksonTest {
 
     protected ObjectMapper mapper;

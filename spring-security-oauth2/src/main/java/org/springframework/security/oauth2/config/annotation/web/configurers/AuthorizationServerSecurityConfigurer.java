@@ -157,7 +157,7 @@ public final class AuthorizationServerSecurityConfigurer extends
 	}
 
 	@Override
-	public void init(HttpSecurity http) throws Exception {
+	public void init(HttpSecurity http) {
 		registerDefaultAuthenticationEntryPoint(http);
 		AuthenticationManagerBuilder builder = http.getSharedObject(AuthenticationManagerBuilder.class);
 		// gh-808: this chain's AuthenticationManager must authenticate 'clients' only. Without this,
@@ -181,10 +181,16 @@ public final class AuthorizationServerSecurityConfigurer extends
 				builder.authenticationProvider(provider);
 			}
 		}
-		http.securityContext().securityContextRepository(new NullSecurityContextRepository()).and().csrf().disable()
-				.httpBasic().authenticationEntryPoint(this.authenticationEntryPoint).realmName(realm);
+		http.securityContext(securityContext -> securityContext
+						.securityContextRepository(new NullSecurityContextRepository()))
+				.csrf(csrf -> csrf.disable())
+				.httpBasic(httpBasic -> httpBasic
+						.authenticationEntryPoint(this.authenticationEntryPoint).realmName(realm));
 		if (sslOnly) {
-			http.requiresChannel().anyRequest().requiresSecure();
+			// requiresChannel()/ChannelProcessingFilter is unusable in Spring Security 7 (the
+			// backing classes were removed from spring-security-web); redirectToHttps() is the
+			// designated replacement and redirects any insecure request to HTTPS.
+			http.redirectToHttps(org.springframework.security.config.Customizer.withDefaults());
 		}
 	}
 
@@ -229,8 +235,8 @@ public final class AuthorizationServerSecurityConfigurer extends
 	}
 
 	@Override
-	public void configure(HttpSecurity http) throws Exception {
-		
+	public void configure(HttpSecurity http) {
+
 		// ensure this is initialized
 		frameworkEndpointHandlerMapping();
 		if (allowFormAuthenticationForClients) {
@@ -241,7 +247,7 @@ public final class AuthorizationServerSecurityConfigurer extends
 			http.addFilterBefore(filter, BasicAuthenticationFilter.class);
 		}
 
-		http.exceptionHandling().accessDeniedHandler(accessDeniedHandler);
+		http.exceptionHandling(exceptions -> exceptions.accessDeniedHandler(accessDeniedHandler));
 	}
 
 	private ClientCredentialsTokenEndpointFilter clientCredentialsTokenEndpointFilter(HttpSecurity http) {

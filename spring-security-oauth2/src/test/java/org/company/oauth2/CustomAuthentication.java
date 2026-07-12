@@ -25,7 +25,7 @@ public class CustomAuthentication extends AbstractAuthenticationToken  {
     private String principal;
 
     public CustomAuthentication(String name, boolean authenticated) {
-        super(null);
+        super((java.util.Collection<? extends org.springframework.security.core.GrantedAuthority>) null);
         setAuthenticated(authenticated);
         this.principal = name;
     }

@@ -33,7 +33,8 @@ import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.OAuth2Request;
 import org.springframework.security.oauth2.provider.RequestTokenFactory;
 import org.springframework.security.oauth2.provider.client.BaseClientDetails;
-import org.springframework.security.web.FilterInvocation;
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.security.web.access.intercept.RequestAuthorizationContext;
 
 /**
  * @author Dave Syer
@@ -53,7 +54,7 @@ public class OAuth2WebSecurityExpressionHandlerTests {
 		Authentication userAuthentication = new UsernamePasswordAuthenticationToken("user", "pass",
 				AuthorityUtils.createAuthorityList("ROLE_USER"));
 		OAuth2Authentication oAuth2Authentication = new OAuth2Authentication(clientAuthentication, userAuthentication);
-		FilterInvocation invocation = new FilterInvocation("/foo", "GET");
+		RequestAuthorizationContext invocation = new RequestAuthorizationContext(new MockHttpServletRequest("GET", "/foo"));
 		EvaluationContext context = handler.createEvaluationContext(oAuth2Authentication, invocation);
 		Expression expression = handler.getExpressionParser().parseExpression(
 				"#oauth2.hasAnyScope('write') or #oauth2.isUser()");
@@ -73,7 +74,7 @@ public class OAuth2WebSecurityExpressionHandlerTests {
 
 		Authentication userAuthentication = null;
 		OAuth2Authentication oAuth2Authentication = new OAuth2Authentication(clientAuthentication, userAuthentication);
-		FilterInvocation invocation = new FilterInvocation("/foo", "GET");
+		RequestAuthorizationContext invocation = new RequestAuthorizationContext(new MockHttpServletRequest("GET", "/foo"));
 		Expression expression = handler.getExpressionParser()
 				.parseExpression("#oauth2.clientHasAnyRole('ROLE_CLIENT')");
 		assertTrue((Boolean) expression.getValue(handler.createEvaluationContext(oAuth2Authentication, invocation)));
@@ -85,7 +86,7 @@ public class OAuth2WebSecurityExpressionHandlerTests {
 				Collections.singleton("read"));
 		Authentication userAuthentication = null;
 		OAuth2Authentication oAuth2Authentication = new OAuth2Authentication(clientAuthentication, userAuthentication);
-		FilterInvocation invocation = new FilterInvocation("/foo", "GET");
+		RequestAuthorizationContext invocation = new RequestAuthorizationContext(new MockHttpServletRequest("GET", "/foo"));
 		Expression expression = handler.getExpressionParser().parseExpression("#oauth2.hasAnyScope('read')");
 		assertTrue((Boolean) expression.getValue(handler.createEvaluationContext(oAuth2Authentication, invocation)));
 	}
@@ -106,7 +107,7 @@ public class OAuth2WebSecurityExpressionHandlerTests {
 	@Test
 	public void testNonOauthClient() throws Exception {
 		Authentication clientAuthentication = new UsernamePasswordAuthenticationToken("foo", "bar");
-		FilterInvocation invocation = new FilterInvocation("/foo", "GET");
+		RequestAuthorizationContext invocation = new RequestAuthorizationContext(new MockHttpServletRequest("GET", "/foo"));
 		Expression expression = handler.getExpressionParser().parseExpression("#oauth2.clientHasAnyRole()");
 		assertFalse((Boolean) expression.getValue(handler.createEvaluationContext(clientAuthentication, invocation)));
 	}
@@ -115,7 +116,7 @@ public class OAuth2WebSecurityExpressionHandlerTests {
 	public void testStandardSecurityRoot() throws Exception {
 		Authentication clientAuthentication = new UsernamePasswordAuthenticationToken("foo", "bar", null);
 		assertTrue(clientAuthentication.isAuthenticated());
-		FilterInvocation invocation = new FilterInvocation("/foo", "GET");
+		RequestAuthorizationContext invocation = new RequestAuthorizationContext(new MockHttpServletRequest("GET", "/foo"));
 		Expression expression = handler.getExpressionParser().parseExpression("isAuthenticated()");
 		assertTrue((Boolean) expression.getValue(handler.createEvaluationContext(clientAuthentication, invocation)));
 	}

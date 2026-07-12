@@ -55,7 +55,7 @@ public class ClientDetailsServiceBuilder<B extends ClientDetailsServiceBuilder<B
 	public ClientDetailsServiceBuilder<?> clients(final ClientDetailsService clientDetailsService) throws Exception {
 		return new ClientDetailsServiceBuilder() {
 			@Override
-			public ClientDetailsService build() throws Exception {
+			public ClientDetailsService build() {
 				return clientDetailsService;
 			}
 		};
@@ -68,7 +68,7 @@ public class ClientDetailsServiceBuilder<B extends ClientDetailsServiceBuilder<B
 	}
 
 	@Override
-	public ClientDetailsService build() throws Exception {
+	public ClientDetailsService build() {
 		for (ClientBuilder clientDetailsBldr : clientBuilders) {
 			addClient(clientDetailsBldr.clientId, clientDetailsBldr.build());
 		}

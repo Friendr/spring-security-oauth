@@ -26,16 +26,19 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
+import org.springframework.core.annotation.Order;
+import org.springframework.security.config.Customizer;
+import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.security.authentication.AuthenticationDetailsSource;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.crypto.codec.Base64;
+import java.util.Base64;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.common.DefaultOAuth2AccessToken;
@@ -59,7 +62,9 @@ import org.springframework.security.oauth2.provider.token.DefaultTokenServices;
 import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.security.oauth2.provider.token.store.InMemoryTokenStore;
 import org.springframework.security.web.AuthenticationEntryPoint;
-import org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler;
+import org.springframework.security.web.access.expression.DefaultHttpSecurityExpressionHandler;
+import org.springframework.security.web.access.expression.WebExpressionAuthorizationManager;
+import org.springframework.security.oauth2.provider.expression.OAuth2WebSecurityExpressionHandler;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
 import org.springframework.test.web.servlet.MockMvc;
@@ -119,9 +124,9 @@ public class ResourceServerConfigurationTests {
 		mvc.perform(MockMvcRequestBuilders.post("/oauth/token"))
 				.andExpect(MockMvcResultMatchers.header().string("WWW-Authenticate", containsString("Basic")));
 		mvc.perform(MockMvcRequestBuilders.get("/oauth/authorize").accept(MediaType.TEXT_HTML))
-				.andExpect(MockMvcResultMatchers.redirectedUrl("http://localhost/login"));
+				.andExpect(MockMvcResultMatchers.redirectedUrl("/login"));
 		mvc.perform(MockMvcRequestBuilders.post("/oauth/token").header("Authorization",
-				"Basic " + new String(Base64.encode("client:secret".getBytes()))))
+				"Basic " + Base64.getEncoder().encodeToString("client:secret".getBytes())))
 				.andExpect(MockMvcResultMatchers.content().string(containsString("Missing grant type")));
 		context.close();
 	}
@@ -138,9 +143,9 @@ public class ResourceServerConfigurationTests {
 		mvc.perform(MockMvcRequestBuilders.post("/token"))
 				.andExpect(MockMvcResultMatchers.header().string("WWW-Authenticate", containsString("Basic")));
 		mvc.perform(MockMvcRequestBuilders.get("/authorize").accept(MediaType.TEXT_HTML))
-				.andExpect(MockMvcResultMatchers.redirectedUrl("http://localhost/login"));
+				.andExpect(MockMvcResultMatchers.redirectedUrl("/login"));
 		mvc.perform(MockMvcRequestBuilders.post("/token").header("Authorization",
-				"Basic " + new String(Base64.encode("client:secret".getBytes()))))
+				"Basic " + Base64.getEncoder().encodeToString("client:secret".getBytes())))
 				.andExpect(MockMvcResultMatchers.content().string(containsString("Missing grant type")));
 		context.close();
 	}
@@ -259,6 +264,18 @@ public class ResourceServerConfigurationTests {
 			public PasswordEncoder passwordEncoder() {
 				return NoOpPasswordEncoder.getInstance();
 			}
+
+			// Spring Security only auto-creates its default (form login) chain when no
+			// SecurityFilterChain beans exist at all, and the authorization/resource server
+			// configurations register such beans - so declare the login chain explicitly.
+			@Bean
+			@Order(100)
+			public SecurityFilterChain defaultLoginSecurityFilterChain(HttpSecurity http) throws Exception {
+				return http
+						.authorizeHttpRequests(authorize -> authorize.anyRequest().authenticated())
+						.formLogin(Customizer.withDefaults())
+						.build();
+			}
 		}
 	}
 
@@ -285,6 +302,15 @@ public class ResourceServerConfigurationTests {
 			public PasswordEncoder passwordEncoder() {
 				return NoOpPasswordEncoder.getInstance();
 			}
+
+			@Bean
+			@Order(100)
+			public SecurityFilterChain defaultLoginSecurityFilterChain(HttpSecurity http) throws Exception {
+				return http
+						.authorizeHttpRequests(authorize -> authorize.anyRequest().authenticated())
+						.formLogin(Customizer.withDefaults())
+						.build();
+			}
 		}
 	}
 
@@ -292,7 +318,7 @@ public class ResourceServerConfigurationTests {
 	@EnableResourceServer
 	@EnableAuthorizationServer
 	@EnableWebSecurity
-	@EnableGlobalMethodSecurity(prePostEnabled = true, proxyTargetClass = true)
+	@EnableMethodSecurity(proxyTargetClass = true)
 	protected static class ResourceServerAndAuthorizationServerContextAndGlobalMethodSecurity
 			extends AuthorizationServerConfigurerAdapter {
 		@Override
@@ -313,7 +339,7 @@ public class ResourceServerConfigurationTests {
 
 		@Override
 		public void configure(HttpSecurity http) throws Exception {
-			http.authorizeRequests().anyRequest().authenticated();
+			http.authorizeHttpRequests(authorize -> authorize.anyRequest().authenticated());
 		}
 
 		@Override
@@ -344,7 +370,9 @@ public class ResourceServerConfigurationTests {
 
 		@Override
 		public void configure(HttpSecurity http) throws Exception {
-			http.authorizeRequests().anyRequest().access("#oauth2.isClient()");
+			http.authorizeHttpRequests(authorize -> authorize.anyRequest().access(
+					WebExpressionAuthorizationManager.withExpressionHandler(new OAuth2WebSecurityExpressionHandler())
+							.expression("#oauth2.isClient()")));
 		}
 
 		@Bean
@@ -359,12 +387,14 @@ public class ResourceServerConfigurationTests {
 	protected static class ExpressionHandlerContext extends ResourceServerConfigurerAdapter {
 		@Override
 		public void configure(ResourceServerSecurityConfigurer resources) throws Exception {
-			resources.expressionHandler(new DefaultWebSecurityExpressionHandler());
+			resources.expressionHandler(new DefaultHttpSecurityExpressionHandler());
 		}
 
 		@Override
 		public void configure(HttpSecurity http) throws Exception {
-			http.authorizeRequests().anyRequest().access("#oauth2.isClient()");
+			http.authorizeHttpRequests(authorize -> authorize.anyRequest().access(
+					WebExpressionAuthorizationManager.withExpressionHandler(new DefaultHttpSecurityExpressionHandler())
+							.expression("#oauth2.isClient()")));
 		}
 
 		@Bean

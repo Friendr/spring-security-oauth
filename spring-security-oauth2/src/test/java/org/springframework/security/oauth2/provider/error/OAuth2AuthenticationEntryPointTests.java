@@ -96,7 +96,8 @@ public class OAuth2AuthenticationEntryPointTests {
 		// TODO: maybe use forward / redirect for HTML content?
 		assertEquals(HttpServletResponse.SC_NOT_ACCEPTABLE, response.getStatus());
 		assertEquals("", response.getContentAsString());
-		assertEquals(null, response.getErrorMessage());
+		// Spring Framework 7 propagates the not-acceptable reason into sendError (previously null)
+		assertTrue(response.getErrorMessage().contains("Acceptable representations"));
 	}
 
 	@Test

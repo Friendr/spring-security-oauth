@@ -95,7 +95,7 @@ public class ClientCredentialsTokenEndpointFilter extends AbstractAuthentication
 			throws AuthenticationException, IOException, ServletException {
 
 		if (allowOnlyPost && !"POST".equalsIgnoreCase(request.getMethod())) {
-			throw new HttpRequestMethodNotSupportedException(request.getMethod(), new String[] { "POST" });
+			throw new HttpRequestMethodNotSupportedException(request.getMethod(), java.util.List.of("POST"));
 		}
 
 		String clientId = request.getParameter("client_id");

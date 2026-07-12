@@ -57,7 +57,7 @@ public class OAuth2AuthenticationEntryPoint extends AbstractOAuth2SecurityExcept
 	protected ResponseEntity<?> enhanceResponse(ResponseEntity<?> response, Exception exception) {
 		HttpHeaders headers = response.getHeaders();
 		String existing = null;
-		if (headers.containsKey("WWW-Authenticate")) {
+		if (headers.containsHeader("WWW-Authenticate")) {
 			existing = extractTypePrefix(headers.getFirst("WWW-Authenticate"));
 		}
 		StringBuilder builder = new StringBuilder();

@@ -208,7 +208,7 @@ public class AuthorizationEndpointTests {
 				sessionStatus, principal);
 		String url = ((RedirectView) result).getUrl();
 		assertEquals("https://anywhere.com?foo=b%20=&bar=f%20$&code=thecode", url);
-		MultiValueMap<String, String> params = UriComponentsBuilder.fromHttpUrl(url).build().getQueryParams();
+		MultiValueMap<String, String> params = UriComponentsBuilder.fromUriString(url).build().getQueryParams();
 		assertEquals("[b%20=]", params.get("foo").toString());
 		assertEquals("[f%20$]", params.get("bar").toString());
 	}

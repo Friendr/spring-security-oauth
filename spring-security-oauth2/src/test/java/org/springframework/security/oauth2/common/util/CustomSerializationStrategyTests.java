@@ -20,11 +20,9 @@ package org.springframework.security.oauth2.common.util;
 import org.company.oauth2.CustomAuthentication;
 import org.company.oauth2.CustomOAuth2AccessToken;
 import org.company.oauth2.CustomOAuth2Authentication;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
-import org.springframework.core.io.support.SpringFactoriesLoader;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.common.DefaultExpiringOAuth2RefreshToken;
@@ -37,19 +35,24 @@ import java.io.Serializable;
 import java.util.*;
 
 import static org.junit.Assert.*;
-import static org.powermock.api.mockito.PowerMockito.spy;
-import static org.powermock.api.mockito.PowerMockito.when;
 
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({ SpringFactoriesLoader.class })
 public class CustomSerializationStrategyTests {
+
+    private SerializationStrategy originalStrategy;
+
+    @Before
+    public void saveStrategy() {
+        originalStrategy = SerializationUtils.getSerializationStrategy();
+        SerializationUtils.setSerializationStrategy(new CustomSerializationStrategy());
+    }
+
+    @After
+    public void restoreStrategy() {
+        SerializationUtils.setSerializationStrategy(originalStrategy);
+    }
 
     @Test
     public void loadCustomSerializationStrategy() {
-        spy(SpringFactoriesLoader.class);
-        when(SpringFactoriesLoader
-                .loadFactories(SerializationStrategy.class, SerializationUtils.class.getClassLoader()))
-                .thenReturn(Arrays.<SerializationStrategy>asList(new CustomSerializationStrategy()));
 
         deserialize(new DefaultOAuth2AccessToken("access-token-" + UUID.randomUUID()));
 

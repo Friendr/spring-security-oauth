@@ -34,9 +34,16 @@ public class ClientDetailsServiceConfigurer extends
 		setBuilder(builder);
 	}
 
+	/**
+	 * Replacement for the {@code SecurityConfigurerAdapter.and()} method removed in Spring Security 7.
+	 */
+	public ClientDetailsServiceBuilder<?> and() {
+		return getBuilder();
+	}
+
 	public ClientDetailsServiceBuilder<?> withClientDetails(ClientDetailsService clientDetailsService) throws Exception {
 		setBuilder(getBuilder().clients(clientDetailsService));
-		return this.and();
+		return getBuilder();
 	}
 
 	public InMemoryClientDetailsServiceBuilder inMemory() throws Exception {
@@ -51,11 +58,11 @@ public class ClientDetailsServiceConfigurer extends
 	}
 	
 	@Override
-	public void init(ClientDetailsServiceBuilder<?> builder) throws Exception {
+	public void init(ClientDetailsServiceBuilder<?> builder) {
 	}
 
 	@Override
-	public void configure(ClientDetailsServiceBuilder<?> builder) throws Exception {
+	public void configure(ClientDetailsServiceBuilder<?> builder) {
 	}
 
 }

@@ -60,6 +60,8 @@ public class RedisAuthorizationCodeServicesTests {
 			RedisStandaloneConfiguration shardInfo = new RedisStandaloneConfiguration("localhost");
 			connectionFactory = new JedisConnectionFactory(shardInfo);
 		}
+		// Spring Data Redis 4 no longer auto-starts the factory
+		connectionFactory.start();
 
 		authorizationCodeServices = new RedisAuthorizationCodeServices(connectionFactory);
 

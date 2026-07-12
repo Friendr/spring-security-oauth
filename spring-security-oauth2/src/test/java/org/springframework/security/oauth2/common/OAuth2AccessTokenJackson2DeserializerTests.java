@@ -17,7 +17,6 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Before;
 import org.junit.Test;
-import org.powermock.core.classloader.annotations.PrepareForTest;
 
 import java.io.IOException;
 import java.util.Date;
@@ -26,13 +25,13 @@ import java.util.HashSet;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Tests deserialization of an {@link org.springframework.security.oauth2.common.OAuth2AccessToken} using jackson.
  *
  * @author Rob Winch
  */
-@PrepareForTest(OAuth2AccessTokenJackson2Deserializer.class)
 public class OAuth2AccessTokenJackson2DeserializerTests extends BaseOAuth2AccessTokenJacksonTest {
 
     protected ObjectMapper mapper;
@@ -131,7 +130,9 @@ public class OAuth2AccessTokenJackson2DeserializerTests extends BaseOAuth2Access
 			assertNull(actual.getExpiration());
 		}
 		else {
-			assertEquals(expectedExpiration.getTime(), actual.getExpiration().getTime());
+			// the clock is no longer frozen (PowerMock removal), so allow a small drift
+			long delta = Math.abs(expectedExpiration.getTime() - actual.getExpiration().getTime());
+			assertTrue("expiration drift too large: " + delta + "ms", delta < EXPIRATION_TOLERANCE_MILLIS);
 		}
 		assertEquals(expected.getAdditionalInformation(), actual.getAdditionalInformation());
 	}

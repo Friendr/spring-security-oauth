@@ -53,6 +53,13 @@ public class AuthorizationCodeAccessTokenProviderWithConversionTests {
 
 	private static class StubClientHttpRequest implements ClientHttpRequest {
 
+		private final java.util.Map<String, Object> attributes = new java.util.HashMap<>();
+
+		@Override
+		public java.util.Map<String, Object> getAttributes() {
+			return this.attributes;
+		}
+
 		private static final HttpHeaders DEFAULT_RESPONSE_HEADERS = new HttpHeaders();
 
 		private final HttpStatus responseStatus;

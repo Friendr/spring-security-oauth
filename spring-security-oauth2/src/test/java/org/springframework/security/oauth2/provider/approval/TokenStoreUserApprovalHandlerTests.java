@@ -81,7 +81,7 @@ public class TokenStoreUserApprovalHandlerTests {
 		private String principal;
 
 		public TestAuthentication(String name, boolean authenticated) {
-			super(null);
+			super((java.util.Collection<? extends org.springframework.security.core.GrantedAuthority>) null);
 			setAuthenticated(authenticated);
 			this.principal = name;
 		}
