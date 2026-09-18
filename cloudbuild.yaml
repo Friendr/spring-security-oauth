@@ -1,7 +1,7 @@
 steps:
 - id: checkout ci-settings.xml
-  name: gcr.io/cloud-builders/gsutil
-  args: ['cp', 'gs://friendr-246611_cloudbuild/ci-settings.xml', 'ci-settings.xml']
+  name: gcr.io/cloud-builders/gcloud
+  args: ['storage', 'cp', 'gs://friendr-246611_cloudbuild/ci-settings.xml', 'ci-settings.xml']
 
 - id: maven deploy
   name: eclipse-temurin:21-jdk
